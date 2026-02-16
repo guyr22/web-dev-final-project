@@ -47,29 +47,15 @@ class PostController extends BaseController<IPost> {
 
             // Delete associated image file if exists
             if (post.imgUrl) {
-                // Assuming post.imgUrl is like '/uploads/filename.ext'
-                // We need to construct the absolute path to delete it
-                // public folder is likely two levels up from src/controllers in the build or src structure depending on execution context.
-                // Assuming 'public' is in the root of 'server' directory.
-                // The running server is usually in 'server' directory.
                 try {
                      // Get filename from URL
                     const filename = post.imgUrl.split('/').pop();
                     if (filename) {
                         const filePath = path.join(__dirname, '../../public/uploads', filename);
-                         // Convert src/controllers/../.. -> src/../ -> server/
-                         // Wait, in TS source: src/controllers/post.controller.ts
-                         // ../../ -> src/ -> server/
-                         // So path.join(__dirname, '../../../public/uploads') ?
-                         // Let's assume standard 'public' folder at project root or server root.
-                         // Usually express serves static from 'public'.
-                         // Let's verify directory structure later if possible, but safe guess:
-                         // If running from dist: dist/controllers/...
                         await fs.promises.unlink(filePath);
                     }
                 } catch (err) {
                     console.error('Failed to delete image file:', err);
-                    // Continue to delete post even if file deletion fails
                 }
             }
 
