@@ -36,3 +36,6 @@ logs
 
 
 /*.md
+
+# Image Uploads
+server/public/uploads/
