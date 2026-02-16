@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { mockAuth } from './middleware/mockAuth';
+import authRoutes from './routes/auth.route';
 
 const app = express();
 
@@ -15,7 +16,9 @@ if (process.env.NODE_ENV !== 'production') {
     app.use(mockAuth);
 }
 
-// Routes will be added here
+// Routes
+app.use('/auth', authRoutes);
+
 app.get('/health', (req, res) => {
     res.send('Server is healthy');
 });
