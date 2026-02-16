@@ -12,18 +12,17 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Swagger Documentation (Development only)
-if (process.env.NODE_ENV !== 'production') {
-    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
-        customCss: '.swagger-ui .topbar { display: none }',
-        customSiteTitle: 'University Social App API Docs'
-    }));
-    // Serve Swagger JSON spec
-    app.get('/api-docs.json', (req, res) => {
-        res.setHeader('Content-Type', 'application/json');
-        res.send(swaggerSpec);
-    });
-}
+// Swagger Documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+    customCss: '.swagger-ui .topbar { display: none }',
+    customSiteTitle: 'University Social App API Docs'
+}));
+
+// Serve Swagger JSON spec
+app.get('/api-docs.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(swaggerSpec);
+});
 
 // Mock Auth Middleware (Enabled for Phase 1-3)
 // In production/Phase 4, this should be replaced with real JWT middleware
