@@ -1,8 +1,8 @@
 import express from 'express';
 import cors from 'cors';
-import swaggerUi from 'swagger-ui-express';
-import { mockAuth } from './middleware/mockAuth';
 import authRoutes from './routes/auth.route';
+import postRouter from './routes/post.route';
+import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger.config';
 
 const app = express();
@@ -24,14 +24,9 @@ app.get('/api-docs.json', (req, res) => {
     res.send(swaggerSpec);
 });
 
-// Mock Auth Middleware (Enabled for Phase 1-3)
-// In production/Phase 4, this should be replaced with real JWT middleware
-if (process.env.NODE_ENV !== 'production') {
-    app.use(mockAuth);
-}
-
 // Routes
 app.use('/auth', authRoutes);
+app.use('/posts', postRouter);
 
 app.get('/health', (req, res) => {
     res.send('Server is healthy');

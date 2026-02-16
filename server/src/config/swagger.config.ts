@@ -148,6 +148,46 @@ const options: swaggerJsdoc.Options = {
                             example: 'Error description'
                         }
                     }
+                },
+                Post: {
+                    type: 'object',
+                    properties: {
+                        _id: {
+                            type: 'string',
+                            example: '60d0fe4f5311236168a109ca'
+                        },
+                        title: {
+                            type: 'string',
+                            example: 'My First Post'
+                        },
+                        content: {
+                            type: 'string',
+                            example: 'This is the content of my first post.'
+                        },
+                        owner: {
+                            type: 'string',
+                            example: '507f1f77bcf86cd799439011'
+                        },
+                        imgUrl: {
+                            type: 'string',
+                            example: '/uploads/image-123.jpg'
+                        },
+                        likes: {
+                            type: 'array',
+                            items: {
+                                type: 'string'
+                            },
+                            example: []
+                        },
+                        createdAt: {
+                            type: 'string',
+                            format: 'date-time'
+                        },
+                        updatedAt: {
+                            type: 'string',
+                            format: 'date-time'
+                        }
+                    }
                 }
             }
         },
