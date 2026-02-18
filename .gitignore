@@ -39,3 +39,8 @@ logs
 
 # Image Uploads
 server/public/uploads/
+
+# SSL Certificates
+server/certs/*.pem
+server/certs/*.key
+server/certs/*.crt
