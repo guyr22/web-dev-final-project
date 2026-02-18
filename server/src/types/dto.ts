@@ -20,6 +20,7 @@ export interface IPost {
     owner: string; // User ID
     imgUrl?: string;
     likes?: string[]; // Array of User IDs
+    tags?: string[];
     comments?: IComment[];
     createdAt?: Date;
 }

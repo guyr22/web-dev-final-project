@@ -22,6 +22,10 @@ const postSchema = new Schema<IPost>({
         type: [String],
         default: []
     },
+    tags: {
+        type: [String],
+        default: []
+    },
     comments: [{
         userId: {
             type: String,
