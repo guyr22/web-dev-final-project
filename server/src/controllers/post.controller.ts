@@ -65,6 +65,77 @@ class PostController extends BaseController<IPost> {
             res.status(500).json({ message: (error as Error).message });
         }
     }
+
+    async likePost(req: Request, res: Response) {
+        try {
+            const postId = req.params.id;
+            const userId = (req as any).user._id;
+
+            const post = await this.model.findById(postId);
+            if (!post) {
+                return res.status(404).json({ message: 'Post not found' });
+            }
+
+            // Check if user already liked the post
+            const isLiked = post.likes && post.likes.includes(userId);
+            
+            let updatedPost;
+            if (isLiked) {
+                // Unlike
+                updatedPost = await this.model.findByIdAndUpdate(
+                    postId,
+                    { $pull: { likes: userId } },
+                    { new: true }
+                );
+            } else {
+                // Like
+                updatedPost = await this.model.findByIdAndUpdate(
+                    postId,
+                    { $addToSet: { likes: userId } },
+                    { new: true }
+                );
+            }
+
+            res.json({ 
+                likes: updatedPost?.likes?.length || 0,
+                isLiked: !isLiked 
+            });
+        } catch (error) {
+            res.status(500).json({ message: (error as Error).message });
+        }
+    }
+
+    async addComment(req: Request, res: Response) {
+        try {
+            const postId = req.params.id;
+            const userId = (req as any).user._id;
+            const { content } = req.body;
+
+            if (!content) {
+                return res.status(400).json({ message: 'Comment content is required' });
+            }
+
+            const comment = {
+                userId,
+                content,
+                createdAt: new Date()
+            };
+
+            const updatedPost = await this.model.findByIdAndUpdate(
+                postId,
+                { $push: { comments: comment } },
+                { new: true }
+            );
+
+            if (!updatedPost) {
+                return res.status(404).json({ message: 'Post not found' });
+            }
+
+            res.status(201).json(updatedPost);
+        } catch (error) {
+            res.status(500).json({ message: (error as Error).message });
+        }
+    }
 }
 
 export default new PostController();
