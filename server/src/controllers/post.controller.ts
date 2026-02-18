@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { BaseController } from './base.controller';
 import { IPost } from '../types/dto';
 import PostModel from '../models/post.model';
+import AIService from '../services/ai.service';
 import fs from 'fs';
 import path from 'path';
 
@@ -18,9 +19,18 @@ class PostController extends BaseController<IPost> {
                 return;
             }
 
+            const content = req.body.content;
+            let tags: string[] = [];
+            
+            // Generate tags using AI Service
+            if (content) {
+                tags = await AIService.generateTags(content);
+            }
+
             const postData: Partial<IPost> = {
                 ...req.body,
-                owner: userId
+                owner: userId,
+                tags: tags
             };
 
             // Handle image upload if present

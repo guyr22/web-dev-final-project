@@ -1,8 +1,6 @@
+import 'dotenv/config'; // Load env vars before anything else
 import app from './app';
 import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/web-dev-project';
