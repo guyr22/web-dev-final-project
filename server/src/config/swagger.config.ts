@@ -84,6 +84,17 @@ const options: swaggerJsdoc.Options = {
                         }
                     }
                 },
+                GoogleLoginRequest: {
+                    type: 'object',
+                    required: ['idToken'],
+                    properties: {
+                        idToken: {
+                            type: 'string',
+                            description: 'Google ID token obtained from Google Sign-In',
+                            example: 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjE4MmU0NTBhZGE3YzRhN2RhZjJkZGZjNjg0YmY4YzlhYjI2Nzk4MjUiLCJ0eXAiOiJKV1QifQ...'
+                        }
+                    }
+                },
                 User: {
                     type: 'object',
                     properties: {

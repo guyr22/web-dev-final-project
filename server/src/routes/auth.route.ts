@@ -165,4 +165,40 @@ router.post('/refresh', authController.refresh.bind(authController));
  */
 router.post('/logout', authController.logout.bind(authController));
 
+/**
+ * @swagger
+ * /auth/google:
+ *   post:
+ *     tags:
+ *       - Authentication
+ *     summary: Google OAuth login
+ *     description: Authenticate user using Google ID token and return JWT tokens
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/GoogleLoginRequest'
+ *     responses:
+ *       200:
+ *         description: User successfully authenticated with Google
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/AuthResponse'
+ *       400:
+ *         description: Invalid input or missing ID token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Server error or invalid Google token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+router.post('/google', authController.googleLogin.bind(authController));
+
 export default router;
