@@ -7,6 +7,12 @@ export interface IUser {
     refreshTokens?: string[];
 }
 
+export interface IComment {
+    userId: string;
+    content: string;
+    createdAt: Date;
+}
+
 export interface IPost {
     _id?: string;
     title: string;
@@ -14,6 +20,7 @@ export interface IPost {
     owner: string; // User ID
     imgUrl?: string;
     likes?: string[]; // Array of User IDs
+    comments?: IComment[];
     createdAt?: Date;
 }
 

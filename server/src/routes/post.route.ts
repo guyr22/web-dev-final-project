@@ -151,4 +151,78 @@ router.put('/:id', PostController.update.bind(PostController));
  */
 router.delete('/:id', PostController.delete.bind(PostController));
 
+/**
+ * @swagger
+ * /posts/{id}/like:
+ *   post:
+ *     summary: Toggle like on a post
+ *     tags: [Posts]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The post id
+ *     responses:
+ *       200:
+ *         description: The updated number of likes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 likes:
+ *                   type: number
+ *                 isLiked:
+ *                   type: boolean
+ *       404:
+ *         description: Post not found
+ *       500:
+ *         description: Server error
+ */
+router.post('/:id/like', PostController.likePost.bind(PostController));
+
+/**
+ * @swagger
+ * /posts/{id}/comment:
+ *   post:
+ *     summary: Add a comment to a post
+ *     tags: [Posts]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The post id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               content:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: The updated post with the new comment
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Post'
+ *       400:
+ *         description: Invalid input
+ *       404:
+ *         description: Post not found
+ *       500:
+ *         description: Server error
+ */
+router.post('/:id/comment', PostController.addComment.bind(PostController));
+
 export default router;
