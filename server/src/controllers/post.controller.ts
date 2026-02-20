@@ -11,6 +11,16 @@ class PostController extends BaseController<IPost> {
         super(PostModel);
     }
 
+    async getAll(req: Request, res: Response) {
+        try {
+            const filter = req.query;
+            const items = await this.model.find(filter).populate('owner', 'username imgUrl');
+            res.send(items);
+        } catch (error) {
+            res.status(500).json({ message: (error as Error).message });
+        }
+    }
+
     async create(req: Request, res: Response) {
         try {
             const userId = (req as any).user?._id;
@@ -41,6 +51,41 @@ class PostController extends BaseController<IPost> {
 
             const item = await this.model.create(postData);
             res.status(201).send(item);
+        } catch (error) {
+            res.status(400).json({ message: (error as Error).message });
+        }
+    }
+
+    async update(req: Request, res: Response) {
+        try {
+            const id = req.params.id;
+            const post = await this.model.findById(id);
+
+            if (!post) {
+                return res.status(404).json({ message: 'Post not found' });
+            }
+
+            const updateData: Partial<IPost> = { ...req.body };
+
+            // Handle new image upload
+            if (req.file) {
+                // Delete old image if it exists
+                if (post.imgUrl) {
+                    try {
+                        const filename = post.imgUrl.split('/').pop();
+                        if (filename) {
+                            const filePath = path.join(__dirname, '../../public/uploads', filename);
+                            await fs.promises.unlink(filePath);
+                        }
+                    } catch (err) {
+                        console.error('Failed to delete old image file:', err);
+                    }
+                }
+                updateData.imgUrl = '/uploads/' + req.file.filename;
+            }
+
+            const updatedPost = await this.model.findByIdAndUpdate(id, updateData, { new: true });
+            res.json(updatedPost);
         } catch (error) {
             res.status(400).json({ message: (error as Error).message });
         }

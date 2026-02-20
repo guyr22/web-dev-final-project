@@ -17,7 +17,7 @@ export interface IPost {
     _id?: string;
     title: string;
     content: string;
-    owner: string; // User ID
+    owner: any; // User ID String or populated User Object or ObjectId
     imgUrl?: string;
     likes?: string[]; // Array of User IDs
     tags?: string[];

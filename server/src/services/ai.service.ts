@@ -15,7 +15,7 @@ class AIService {
     async generateTags(content: string): Promise<string[]> {
         // Mock Mode check
         if (process.env.AI_MOCK_MODE === "true") {
-            return ["#mock", "#test", "#fun"];
+            return ["#mock", "#test", "#AI"];
         }
 
         try {
