@@ -13,11 +13,17 @@ export interface IComment {
     createdAt: Date;
 }
 
+export interface IOwner {
+    _id: string;
+    username: string;
+    imgUrl?: string;
+}
+
 export interface IPost {
     _id?: string;
     title: string;
     content: string;
-    owner: string; // User ID
+    owner: IOwner;
     imgUrl?: string;
     likes?: string[]; // Array of User IDs
     tags?: string[];

@@ -11,7 +11,8 @@ const postSchema = new Schema<IPost>({
         required: true
     },
     owner: {
-        type: String, // Storing User ID as string/ObjectId string
+        type: Schema.Types.ObjectId,
+        ref: 'User',
         required: true
     },
     imgUrl: {

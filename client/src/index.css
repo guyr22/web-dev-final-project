@@ -1,0 +1,8 @@
+/* Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* Bootstrap theme overrides */
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f0f2f5;
+}

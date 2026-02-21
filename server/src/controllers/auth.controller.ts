@@ -6,7 +6,7 @@ import googleOAuthService from '../services/google-oauth.service';
 
 const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET || 'access_secret_key';
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'refresh_secret_key';
-const ACCESS_TOKEN_EXPIRY = '15m';
+const ACCESS_TOKEN_EXPIRY = '1d';
 const REFRESH_TOKEN_EXPIRY = '7d';
 
 export class AuthController {

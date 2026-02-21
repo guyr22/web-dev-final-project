@@ -1,23 +1,34 @@
-import { Container, Row, Col, Spinner, Alert } from 'react-bootstrap';
+import { useState } from 'react';
+import { Container, Spinner, Alert, Button, Modal } from 'react-bootstrap';
 import PostCard from '../components/features/PostCard';
+import CreatePost from '../components/features/CreatePost';
 import usePosts from '../hooks/usePosts';
 
 const FeedPage = () => {
     const { posts, loading, error, refreshPosts } = usePosts();
+    const [showCreateModal, setShowCreateModal] = useState(false);
+
+    const handleClose = () => setShowCreateModal(false);
+    const handleShow = () => setShowCreateModal(true);
+
+    const onPostCreated = () => {
+        refreshPosts();
+        handleClose();
+    };
 
     if (loading) {
         return (
-            <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: '100vh' }}>
-                <Spinner animation="border" role="status">
+            <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
+                <Spinner animation="border" variant="primary" style={{ width: '3rem', height: '3rem' }} role="status">
                     <span className="visually-hidden">Loading...</span>
                 </Spinner>
-            </Container>
+            </div>
         );
     }
 
     if (error) {
         return (
-            <Container className="mt-5">
+            <Container className="mt-5" style={{ maxWidth: '600px' }}>
                 <Alert variant="danger">
                     Error loading posts: {error}
                     <div className="mt-2">
@@ -29,21 +40,33 @@ const FeedPage = () => {
     }
 
     return (
-        <Container className="py-4">
-            <h1 className="mb-4">Feed</h1>
-            <Row>
-                {posts.length === 0 ? (
-                    <Col>
-                        <p className="text-muted">No posts found.</p>
-                    </Col>
-                ) : (
-                    posts.map((post) => (
-                        <Col key={post._id} md={6} lg={4} className="mb-4">
-                            <PostCard post={post} />
-                        </Col>
-                    ))
-                )}
-            </Row>
+        <Container className="py-4" style={{ maxWidth: '600px' }}>
+            <div className="d-flex justify-content-between align-items-center mb-4">
+                <h2 className="fw-bold mb-0">Your Feed</h2>
+                <Button variant="dark" onClick={handleShow} className="fw-semibold rounded-3 shadow-sm">
+                    + Create Post
+                </Button>
+            </div>
+
+            <Modal show={showCreateModal} onHide={handleClose} size="lg" centered>
+                <Modal.Header closeButton className="border-bottom-0 pb-0">
+                </Modal.Header>
+                <Modal.Body className="pt-0">
+                     <CreatePost onPostCreated={onPostCreated} />
+                </Modal.Body>
+            </Modal>
+
+            {posts.length === 0 ? (
+                <div className="text-center py-5 text-muted">
+                    <p className="fs-5">No posts yet. Be the first to share something!</p>
+                </div>
+            ) : (
+                <div className="d-flex flex-column gap-4">
+                    {posts.map((post) => (
+                        <PostCard key={post._id} post={post} onPostDeleted={refreshPosts} onPostUpdated={refreshPosts} />
+                    ))}
+                </div>
+            )}
         </Container>
     );
 };

@@ -124,7 +124,7 @@ router.post('/', upload.single('image'), PostController.create.bind(PostControll
  *       500:
  *         description: Server error
  */
-router.put('/:id', PostController.update.bind(PostController));
+router.put('/:id', upload.single('image'), PostController.update.bind(PostController));
 
 /**
  * @swagger

@@ -1,8 +1,14 @@
+export interface IOwner {
+    _id: string;
+    username: string;
+    imgUrl?: string;
+}
+
 export interface IPost {
     _id?: string;
     title: string;
     content: string;
-    owner: string; // User ID
+    owner: IOwner;
     imgUrl?: string;
     likes?: string[];
     tags?: string[];
@@ -11,4 +17,6 @@ export interface IPost {
         content: string;
         createdAt?: string | Date;
     }[];
+    createdAt?: Date;
+    updatedAt?: Date;
 }
