@@ -7,7 +7,7 @@ function App() {
     <BrowserRouter>
       <Navbar bg="dark" data-bs-theme="dark" className="shadow-sm sticky-top">
         <Container>
-          <Navbar.Brand href="/feed" className="fw-bold fs-4">ShakshukGram</Navbar.Brand>
+          <Navbar.Brand href="/feed" className="fw-bold fs-4">ShlakshukGram</Navbar.Brand>
         </Container>
       </Navbar>
       <Routes>
