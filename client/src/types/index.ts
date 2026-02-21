@@ -1,8 +1,14 @@
+export interface IOwner {
+    _id: string;
+    username: string;
+    imgUrl?: string;
+}
+
 export interface IPost {
     _id?: string;
     title: string;
     content: string;
-    owner: any; // User ID string or populated owner object from backend
+    owner: IOwner;
     imgUrl?: string;
     likes?: string[];
     tags?: string[];
