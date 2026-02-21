@@ -3,6 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import authRoutes from './routes/auth.route';
 import postRouter from './routes/post.route';
+import userRouter from './routes/user.route';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './config/swagger.config';
 
@@ -29,6 +30,7 @@ app.get('/api-docs.json', (req, res) => {
 // Routes
 app.use('/auth', authRoutes);
 app.use('/posts', postRouter);
+app.use('/user', userRouter);
 
 app.get('/health', (req, res) => {
     res.send('Server is healthy');
