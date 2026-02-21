@@ -5,6 +5,7 @@ import { IUser } from '../types/dto';
 export interface IUserDocument extends Omit<IUser, '_id'>, Document {
     _id: Types.ObjectId;
     password: string;
+    bio?: string;
     comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
@@ -32,6 +33,10 @@ const userSchema = new Schema<IUserDocument>({
         type: String,
         default: ''
     },
+    bio: {
+        type: String,
+        default: ''
+    },
     refreshTokens: {
         type: [String],
         default: []
@@ -41,7 +46,7 @@ const userSchema = new Schema<IUserDocument>({
 });
 
 // Hash password before saving
-userSchema.pre('save', async function (next) {
+userSchema.pre<IUserDocument>('save', async function (next) {
     if (!this.isModified('password')) {
         return next();
     }
