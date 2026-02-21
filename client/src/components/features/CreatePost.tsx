@@ -6,7 +6,7 @@ import postService from '../../services/post.service';
 
 const createPostSchema = z.object({
   title: z.string().min(3, { message: "Title must be at least 3 characters long" }),
-  content: z.string().optional(),
+  content: z.string().min(1, { message: "Content is required" }),
   file: z.custom<FileList>()
     .refine((files) => files && files.length > 0, { message: "An image file is required" })
     .refine((files) => files?.[0]?.type.startsWith('image/'), { message: "Only image files are allowed" }),
@@ -84,11 +84,11 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
     };
 
     return (
-        <div className="card shadow-sm mb-4">
-            <div className="card-header bg-white">
-                <h5 className="mb-0">Create new post</h5>
+        <div className="card border-0 shadow rounded-4 overflow-hidden mb-4">
+            <div className="card-header bg-white border-bottom px-4 py-3">
+                <h5 className="fw-bold mb-0">Create new post</h5>
             </div>
-            <div className="card-body">
+            <div className="card-body px-4">
                 {submitSuccess && (
                     <div className="alert alert-success alert-dismissible fade show" role="alert">
                         Post created successfully!
@@ -117,7 +117,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
                     </div>
 
                     <div className="mb-3">
-                        <label htmlFor="content" className="form-label">Content</label>
+                        <label htmlFor="content" className="form-label">Content <span className="text-danger">*</span></label>
                         <textarea
                             className={`form-control ${errors.content ? 'is-invalid' : ''}`}
                             id="content"
@@ -155,7 +155,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
                     <div className="d-grid mt-4">
                         <button 
                             type="submit" 
-                            className="btn btn-primary fw-bold"
+                            className="btn btn-dark w-100 fw-bold rounded-3"
                             disabled={isSubmitting}
                         >
                             {isSubmitting ? (

@@ -88,11 +88,11 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated }: PostCardProps) => {
 
     return (
         <>
-            <Card className="h-100 shadow-sm position-relative">
+            <Card className="border-0 shadow rounded-4 overflow-hidden position-relative">
                 <button 
                     type="button" 
-                    className="btn-close position-absolute bg-white border shadow-sm"
-                    style={{ top: '10px', right: '10px', zIndex: 10, padding: '0.5rem' }}
+                    className="btn-close position-absolute bg-light rounded-circle p-2 shadow-sm"
+                    style={{ top: '10px', right: '10px', zIndex: 10 }}
                     onClick={handleShow}
                     title="Delete Post"
                     aria-label="Delete Post"
@@ -102,15 +102,15 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated }: PostCardProps) => {
                         variant="top" 
                         src={post.imgUrl} 
                         alt={post.title}
-                        style={{ height: '200px', objectFit: 'cover' }}
+                        style={{ height: '260px', objectFit: 'cover' }}
                     />
                 )}
-                <Card.Body>
-                    <Card.Title>{post.title}</Card.Title>
-                    <Card.Subtitle className="mb-2 text-muted">
-                        By: {typeof post.owner === 'object' && post.owner !== null ? post.owner.username : post.owner}
-                    </Card.Subtitle>
-                    <Card.Text>
+                <Card.Body className="px-4 py-3">
+                    <Card.Title className="fw-bold fs-5">{post.title}</Card.Title>
+                    <p className="text-secondary small fw-semibold mb-2">
+                        {typeof post.owner === 'object' && post.owner !== null ? post.owner.username : post.owner}
+                    </p>
+                    <Card.Text className="text-body-secondary">
                         {post.content}
                     </Card.Text>
                     
@@ -119,8 +119,8 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated }: PostCardProps) => {
                             {post.tags.map((tag, index) => (
                                 <Badge 
                                     key={index} 
-                                    bg="secondary" 
-                                    className="me-1"
+                                    bg="primary" 
+                                    className="me-1 bg-opacity-10 text-primary fw-medium rounded-pill"
                                 >
                                     {tag}
                                 </Badge>
@@ -128,13 +128,12 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated }: PostCardProps) => {
                         </div>
                     )}
                 </Card.Body>
-                <Card.Footer className="d-flex justify-content-between align-items-center text-muted">
-                    <div>
-                        <small>{post.likes?.length || 0} Likes</small>
-                        <span className="mx-2">•</span>
-                        <small>{post.comments?.length || 0} Comments</small>
+                <Card.Footer className="bg-white border-top d-flex justify-content-between align-items-center px-4 py-3">
+                    <div className="d-flex gap-3 text-secondary small fw-medium">
+                        <span>❤️ {post.likes?.length || 0}</span>
+                        <span>💬 {post.comments?.length || 0}</span>
                     </div>
-                    <Button variant="outline-secondary" size="sm" onClick={handleEditShow}>
+                    <Button variant="outline-dark" size="sm" className="rounded-3 px-3" onClick={handleEditShow}>
                         Edit
                     </Button>
                 </Card.Footer>
@@ -143,7 +142,7 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated }: PostCardProps) => {
             {/* Delete Confirmation Modal */}
             <Modal show={showDeleteModal} onHide={handleClose} centered>
                 <Modal.Header closeButton>
-                    <Modal.Title>Delete Post</Modal.Title>
+                    <Modal.Title className="fw-bold">Delete Post</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     Are you sure you want to delete the post "{post.title}"? This action cannot be undone.
@@ -168,7 +167,7 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated }: PostCardProps) => {
             {/* Edit Post Modal */}
             <Modal show={showEditModal} onHide={handleEditClose} size="lg" centered>
                 <Modal.Header closeButton>
-                    <Modal.Title>Edit Post</Modal.Title>
+                    <Modal.Title className="fw-bold">Edit Post</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form>
@@ -205,7 +204,7 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated }: PostCardProps) => {
                                 <img
                                     src={editPreviewUrl}
                                     alt="Preview"
-                                    className="img-thumbnail rounded"
+                                    className="img-thumbnail rounded-3"
                                     style={{ maxHeight: '200px', objectFit: 'cover' }}
                                 />
                             </div>
@@ -216,7 +215,7 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated }: PostCardProps) => {
                     <Button variant="secondary" onClick={handleEditClose} disabled={isUpdating}>
                         Cancel
                     </Button>
-                    <Button variant="primary" onClick={handleUpdate} disabled={isUpdating || !editTitle.trim()}>
+                    <Button variant="dark" onClick={handleUpdate} disabled={isUpdating || !editTitle.trim()}>
                         {isUpdating ? (
                             <>
                                 <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
