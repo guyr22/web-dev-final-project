@@ -51,6 +51,45 @@ class AIService {
             return [];
         }
     }
+    async parseSearchQuery(freeText: string): Promise<string[]> {
+        // Mock Mode check
+        if (process.env.AI_MOCK_MODE === "true") {
+            // Provide a hardcoded array of mock search keywords
+            return ["#mock", "#test", "#AI"];
+        }
+
+        try {
+            this.init();
+            
+            if (!process.env.GEMINI_API_KEY) {
+                console.warn("GEMINI_API_KEY is missing, returning empty array");
+                return [];
+            }
+            const prompt = `Extract exactly 2 to 3 main keywords or search terms from this user query. Return ONLY a JSON array of strings in lowercase, prepended with a hash symbol if they are topics. Query: "${freeText}"`;
+            
+            const result = await this.model.generateContent(prompt);
+            const response = await result.response;
+            const text = response.text();
+            
+            const jsonMatch = text.match(/\[[\s\S]*\]/);
+            if (jsonMatch) {
+                const keywords = JSON.parse(jsonMatch[0]);
+                if (Array.isArray(keywords)) {
+                    return keywords.map((kw: string) => {
+                        const lowerKw = kw.toLowerCase();
+                        return lowerKw.startsWith('#') ? lowerKw : `#${lowerKw}`;
+                    });
+                }
+            }
+            
+             console.warn("Failed to parse AI response as JSON array:", text);
+             return [];
+
+        } catch (error) {
+            console.error("AI Service Error:", error);
+            return [];
+        }
+    }
 }
 
 export default new AIService();
