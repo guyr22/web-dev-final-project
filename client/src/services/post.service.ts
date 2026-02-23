@@ -70,11 +70,36 @@ export const updatePost = async (postId: string, formData: FormData): Promise<IP
     }
 }
 
+export const searchPosts = async (query: string): Promise<IPost[]> => {
+    try {
+        const response = await api.get<IPost[]>(`/posts/search?q=${encodeURIComponent(query)}`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+            }
+        });
+        const posts = response.data.map(post => ({
+            ...post,
+            imgUrl: post.imgUrl && !post.imgUrl.startsWith('http') 
+                ? `${import.meta.env.VITE_API_URL}${post.imgUrl}` 
+                : post.imgUrl
+        })).sort((a, b) => {
+            const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+            const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+            return dateB - dateA;
+        });
+        return posts;
+    } catch (error) {
+        console.error("Error searching posts:", error);
+        throw error;
+    }
+};
+
 const postService = {
     getAllPosts,
     createPost,
     deletePost,
     updatePost,
+    searchPosts,
 };
 
 export default postService;

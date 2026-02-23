@@ -60,6 +60,37 @@ router.get('/', PostController.getAll.bind(PostController));
 
 /**
  * @swagger
+ * /posts/search:
+ *   get:
+ *     summary: Search posts using free text AI integration
+ *     tags: [Posts]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: q
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Free text search query
+ *     responses:
+ *       200:
+ *         description: Search results
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Post'
+ *       400:
+ *         description: Missing query parameter
+ *       500:
+ *         description: Server error
+ */
+router.get('/search', PostController.searchPosts.bind(PostController));
+
+/**
+ * @swagger
  * /posts:
  *   post:
  *     summary: Create a new post

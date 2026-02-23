@@ -21,6 +21,22 @@ class PostController extends BaseController<IPost> {
         }
     }
 
+    async searchPosts(req: Request, res: Response) {
+        try {
+            const freeText = req.query.q as string;
+            if (!freeText) {
+                return res.status(400).json({ message: 'Search query "q" is required' });
+            }
+
+            const keywords = await AIService.parseSearchQuery(freeText);  
+            const items = await this.model.find({ tags: { $in: keywords } }).populate('owner', 'username imgUrl');
+            
+            res.status(200).json(items);
+        } catch (error) {
+            res.status(500).json({ message: (error as Error).message });
+        }
+    }
+
     async create(req: Request, res: Response) {
         try {
             const userId = (req as any).user?._id;
