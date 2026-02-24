@@ -5,7 +5,7 @@ import CreatePost from '../components/features/CreatePost';
 import usePosts from '../hooks/usePosts';
 
 const FeedPage = () => {
-    const { posts, loading, error, isSearching, searchQuery, refreshPosts, performSearch, clearSearch } = usePosts();
+    const { posts, loading, loadingMore, error, hasMore, isSearching, searchQuery, refreshPosts, loadMore, performSearch, clearSearch } = usePosts();
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [searchInput, setSearchInput] = useState('');
 
@@ -102,6 +102,26 @@ const FeedPage = () => {
                     {posts.map((post) => (
                         <PostCard key={post._id} post={post} onPostDeleted={refreshPosts} onPostUpdated={refreshPosts} />
                     ))}
+
+                    {hasMore && !isSearching && (
+                        <div className="text-center py-3">
+                            <Button
+                                variant="outline-primary"
+                                onClick={loadMore}
+                                disabled={loadingMore}
+                                className="fw-semibold px-5 rounded-3"
+                            >
+                                {loadingMore ? (
+                                    <>
+                                        <Spinner animation="border" size="sm" className="me-2" />
+                                        Loading...
+                                    </>
+                                ) : (
+                                    'Load More'
+                                )}
+                            </Button>
+                        </div>
+                    )}
                 </div>
             )}
         </Container>
