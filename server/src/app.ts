@@ -10,7 +10,9 @@ import { swaggerSpec } from './config/swagger.config';
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    exposedHeaders: ['X-Total-Count']
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, '../public/uploads'))); // Serve uploaded files

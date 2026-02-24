@@ -4,9 +4,9 @@ const options: swaggerJsdoc.Options = {
     definition: {
         openapi: '3.0.0',
         info: {
-            title: 'University Social App API',
+            title: 'ShlakshukGram API',
             version: '1.0.0',
-            description: 'Instagram Clone - Social Media API for university project',
+            description: 'ShlakshukGram - Social Media API for university project',
             contact: {
                 name: 'API Support',
                 email: 'support@example.com'
@@ -14,7 +14,7 @@ const options: swaggerJsdoc.Options = {
         },
         servers: [
             {
-                url: 'http://localhost:3000',
+                url: `http://localhost:${process.env.PORT}`,
                 description: 'Development server'
             }
         ],
