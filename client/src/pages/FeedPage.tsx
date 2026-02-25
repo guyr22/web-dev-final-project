@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { Container, Spinner, Alert, Button, Modal } from 'react-bootstrap';
+import { Container, Spinner, Alert, Button, Modal, Form, InputGroup } from 'react-bootstrap';
 import PostCard from '../components/features/PostCard';
 import CreatePost from '../components/features/CreatePost';
 import usePosts from '../hooks/usePosts';
 
 const FeedPage = () => {
-    const { posts, loading, error, refreshPosts } = usePosts();
+    const { posts, loading, loadingMore, error, hasMore, isSearching, searchQuery, refreshPosts, loadMore, performSearch, clearSearch } = usePosts();
     const [showCreateModal, setShowCreateModal] = useState(false);
+    const [searchInput, setSearchInput] = useState('');
 
     const handleClose = () => setShowCreateModal(false);
     const handleShow = () => setShowCreateModal(true);
@@ -14,6 +15,16 @@ const FeedPage = () => {
     const onPostCreated = () => {
         refreshPosts();
         handleClose();
+    };
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        performSearch(searchInput);
+    };
+
+    const handleClearSearch = () => {
+        setSearchInput('');
+        clearSearch();
     };
 
     if (loading) {
@@ -48,6 +59,32 @@ const FeedPage = () => {
                 </Button>
             </div>
 
+            <Form onSubmit={handleSearch} className="mb-4">
+                <InputGroup>
+                    <Form.Control
+                        type="text"
+                        placeholder="Smart Search"
+                        value={searchInput}
+                        onChange={(e) => setSearchInput(e.target.value)}
+                        className="shadow-sm rounded-start-3"
+                    />
+                    <Button variant="primary" type="submit" className="shadow-sm px-4 fw-semibold" style={{ zIndex: 0 }}>
+                        Search
+                    </Button>
+                </InputGroup>
+            </Form>
+
+            {isSearching && (
+                <div className="d-flex justify-content-between align-items-center mb-4 p-3 bg-light rounded-3 border">
+                    <span className="fw-medium text-primary">
+                        Showing results for: "{searchQuery}"
+                    </span>
+                    <Button variant="outline-secondary" size="sm" onClick={handleClearSearch} className="fw-semibold">
+                        Clear Search
+                    </Button>
+                </div>
+            )}
+
             <Modal show={showCreateModal} onHide={handleClose} size="lg" centered>
                 <Modal.Header closeButton className="border-bottom-0 pb-0">
                 </Modal.Header>
@@ -65,6 +102,26 @@ const FeedPage = () => {
                     {posts.map((post) => (
                         <PostCard key={post._id} post={post} onPostDeleted={refreshPosts} onPostUpdated={refreshPosts} />
                     ))}
+
+                    {hasMore && !isSearching && (
+                        <div className="text-center py-3">
+                            <Button
+                                variant="outline-primary"
+                                onClick={loadMore}
+                                disabled={loadingMore}
+                                className="fw-semibold px-5 rounded-3"
+                            >
+                                {loadingMore ? (
+                                    <>
+                                        <Spinner animation="border" size="sm" className="me-2" />
+                                        Loading...
+                                    </>
+                                ) : (
+                                    'Load More'
+                                )}
+                            </Button>
+                        </div>
+                    )}
                 </div>
             )}
         </Container>

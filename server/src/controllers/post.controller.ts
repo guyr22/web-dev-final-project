@@ -13,9 +13,36 @@ class PostController extends BaseController<IPost> {
 
     async getAll(req: Request, res: Response) {
         try {
-            const filter = req.query;
-            const items = await this.model.find(filter).populate('owner', 'username imgUrl');
+            const page = parseInt(req.query.page as string) || 1;
+            const limit = parseInt(req.query.limit as string) || 10;
+            const skip = (page - 1) * limit;
+
+            const totalCount = await this.model.countDocuments();
+            const items = await this.model
+                .find()
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit)
+                .populate('owner', 'username imgUrl');
+
+            res.set('X-Total-Count', totalCount.toString());
             res.send(items);
+        } catch (error) {
+            res.status(500).json({ message: (error as Error).message });
+        }
+    }
+
+    async searchPosts(req: Request, res: Response) {
+        try {
+            const freeText = req.query.q as string;
+            if (!freeText) {
+                return res.status(400).json({ message: 'Search query "q" is required' });
+            }
+
+            const keywords = await AIService.parseSearchQuery(freeText);  
+            const items = await this.model.find({ tags: { $in: keywords } }).populate('owner', 'username imgUrl');
+            
+            res.status(200).json(items);
         } catch (error) {
             res.status(500).json({ message: (error as Error).message });
         }
