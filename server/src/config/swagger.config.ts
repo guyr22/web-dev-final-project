@@ -14,7 +14,7 @@ const options: swaggerJsdoc.Options = {
         },
         servers: [
             {
-                url: `http://localhost:${process.env.PORT}`,
+                url: `http://localhost:${process.env.PORT || 3000}`,
                 description: 'Development server'
             }
         ],
@@ -199,6 +199,52 @@ const options: swaggerJsdoc.Options = {
                             format: 'date-time'
                         }
                     }
+                },
+                UserProfile: {
+                    type: 'object',
+                    properties: {
+                        _id: {
+                            type: 'string',
+                            example: '507f1f77bcf86cd799439011'
+                        },
+                        username: {
+                            type: 'string',
+                            example: 'johndoe'
+                        },
+                        email: {
+                            type: 'string',
+                            format: 'email',
+                            example: 'john@example.com'
+                        },
+                        imgUrl: {
+                            type: 'string',
+                            example: '/uploads/avatar-123.jpg'
+                        },
+                        bio: {
+                            type: 'string',
+                            example: 'Computer Science student 🎓'
+                        }
+                    }
+                },
+                UpdateProfileRequest: {
+                    type: 'object',
+                    properties: {
+                        imgUrl: {
+                            type: 'string',
+                            description: 'Direct URL for avatar (used with application/json)',
+                            example: 'https://example.com/avatar.jpg'
+                        },
+                        bio: {
+                            type: 'string',
+                            description: 'Short bio / description',
+                            example: 'Computer Science student 🎓'
+                        },
+                        avatar: {
+                            type: 'string',
+                            format: 'binary',
+                            description: 'Avatar image file (used with multipart/form-data)'
+                        }
+                    }
                 }
             }
         },
@@ -206,6 +252,10 @@ const options: swaggerJsdoc.Options = {
             {
                 name: 'Authentication',
                 description: 'User authentication and authorization endpoints'
+            },
+            {
+                name: 'User',
+                description: 'User profile management endpoints'
             }
         ]
     },

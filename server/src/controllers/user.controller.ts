@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { User } from '../models/user.model';
-import { upload } from '../middleware/fileUpload';
 
 export class UserController {
     /**
