@@ -1,3 +1,17 @@
+export interface IUser {
+    _id: string;
+    username: string;
+    email: string;
+    imgUrl?: string;
+    bio?: string;
+}
+
+export interface IAuthResponse {
+    accessToken: string;
+    refreshToken: string;
+    user: IUser;
+}
+
 export interface IOwner {
     _id: string;
     username: string;
