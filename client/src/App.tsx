@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+
 import { Navbar, Container, Nav } from 'react-bootstrap';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import FeedPage from './pages/FeedPage';
@@ -20,21 +21,23 @@ function PrivateRoute({ children }: { children: ReactNode }) {
 // ---------------------------------------------------------------------------
 function AppShell() {
   const { isAuthenticated, logout } = useAuth();
+  const { pathname } = useLocation();
+  const hideNav = pathname === '/login' || pathname === '/register';
 
   return (
-    <BrowserRouter>
-      <Navbar bg="dark" data-bs-theme="dark" className="shadow-sm sticky-top">
-        <Container>
-          <Navbar.Brand href="/feed" className="fw-bold fs-4">ShlakshukGram</Navbar.Brand>
-          {isAuthenticated && (
-            <Nav className="ms-auto">
-              <Nav.Link onClick={logout} className="text-white-50">
-                Sign out
-              </Nav.Link>
-            </Nav>
-          )}
-        </Container>
-      </Navbar>
+    <>
+      {!hideNav && (
+        <Navbar bg="dark" data-bs-theme="dark" className="shadow-sm sticky-top">
+          <Container>
+            <Navbar.Brand href="/feed" className="fw-bold fs-4">ShlakshukGram</Navbar.Brand>
+            {isAuthenticated && (
+              <Nav className="ms-auto">
+                <Nav.Link onClick={logout} className="text-white-50">Sign out</Nav.Link>
+              </Nav>
+            )}
+          </Container>
+        </Navbar>
+      )}
       <Routes>
         <Route path="/" element={<Navigate to="/feed" replace />} />
         <Route path="/login" element={<LoginPage />} />
@@ -48,7 +51,7 @@ function AppShell() {
           }
         />
       </Routes>
-    </BrowserRouter>
+    </>
   );
 }
 

@@ -3,36 +3,30 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Container, Card, Form, Button, Alert, Spinner } from 'react-bootstrap';
 import { GoogleLogin } from '@react-oauth/google';
 import authService from '../services/auth.service';
 import { setTokens } from '../context/AuthContext';
 import { useAuth } from '../context/AuthContext';
+import '../styles/auth.css';
 
-// ---------------------------------------------------------------------------
-// Zod schema
-// ---------------------------------------------------------------------------
 const registerSchema = z
     .object({
         username: z
             .string()
             .min(3, 'Username must be at least 3 characters')
             .max(30, 'Username cannot exceed 30 characters')
-            .regex(/^[a-zA-Z0-9_]+$/, 'Username may only contain letters, numbers, and underscores'),
+            .regex(/^[a-zA-Z0-9_]+$/, 'Letters, numbers, and underscores only'),
         email: z.string().email('Please enter a valid email address'),
         password: z.string().min(6, 'Password must be at least 6 characters'),
         confirmPassword: z.string(),
     })
-    .refine((data) => data.password === data.confirmPassword, {
+    .refine((d) => d.password === d.confirmPassword, {
         message: 'Passwords do not match',
         path: ['confirmPassword'],
     });
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
 export default function RegisterPage() {
     const navigate = useNavigate();
     const { setUser } = useAuth();
@@ -42,143 +36,141 @@ export default function RegisterPage() {
         register,
         handleSubmit,
         formState: { errors, isSubmitting },
-    } = useForm<RegisterFormValues>({
-        resolver: zodResolver(registerSchema),
-    });
+    } = useForm<RegisterFormValues>({ resolver: zodResolver(registerSchema) });
 
     const onSubmit = async (values: RegisterFormValues) => {
         setServerError(null);
         try {
             const { username, email, password } = values;
-            const response = await authService.register({ username, email, password });
-            setTokens(response.accessToken, response.refreshToken);
-            setUser(response.user);
+            const res = await authService.register({ username, email, password });
+            setTokens(res.accessToken, res.refreshToken);
+            setUser(res.user);
             navigate('/feed');
-        } catch (err: unknown) {
-            const message =
-                err instanceof Error ? err.message : 'Registration failed. Please try again.';
-            setServerError(message);
+        } catch {
+            setServerError('Registration failed. The email or username may already be taken.');
         }
     };
 
-    const handleGoogleSuccess = async (credentialResponse: { credential?: string }) => {
+    const handleGoogleSuccess = async (cr: { credential?: string }) => {
         setServerError(null);
         try {
-            if (!credentialResponse.credential) throw new Error('No credential received');
-            const response = await authService.googleLogin(credentialResponse.credential);
-            setTokens(response.accessToken, response.refreshToken);
-            setUser(response.user);
+            if (!cr.credential) throw new Error();
+            const res = await authService.googleLogin(cr.credential);
+            setTokens(res.accessToken, res.refreshToken);
+            setUser(res.user);
             navigate('/feed');
-        } catch (err: unknown) {
-            const message =
-                err instanceof Error ? err.message : 'Google login failed. Please try again.';
-            setServerError(message);
+        } catch {
+            setServerError('Google sign-up failed. Please try again.');
         }
     };
 
     return (
-        <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: '85vh' }}>
-            <Card className="shadow-sm" style={{ width: '100%', maxWidth: 440 }}>
-                <Card.Body className="p-4">
-                    <h2 className="text-center mb-4 fw-bold">Create Account</h2>
+        <div className="auth-page">
+            <div className="auth-blob auth-blob-1" />
+            <div className="auth-blob auth-blob-2" />
 
-                    {serverError && (
-                        <Alert variant="danger" onClose={() => setServerError(null)} dismissible>
-                            {serverError}
-                        </Alert>
-                    )}
+            <div className="auth-card">
+                {/* Brand */}
+                <div className="auth-logo">
+                    <div className="auth-logo-icon">📸</div>
+                    <span className="auth-logo-name">ShlakshukGram</span>
+                </div>
 
-                    <Form onSubmit={handleSubmit(onSubmit)} noValidate>
-                        {/* Username */}
-                        <Form.Group className="mb-3" controlId="register-username">
-                            <Form.Label>Username</Form.Label>
-                            <Form.Control
-                                type="text"
-                                placeholder="john_doe"
-                                isInvalid={!!errors.username}
-                                {...register('username')}
-                            />
-                            <Form.Control.Feedback type="invalid">
-                                {errors.username?.message}
-                            </Form.Control.Feedback>
-                        </Form.Group>
+                <h1 className="auth-title">Create account</h1>
+                <p className="auth-subtitle">Join and start sharing your moments</p>
 
-                        {/* Email */}
-                        <Form.Group className="mb-3" controlId="register-email">
-                            <Form.Label>Email address</Form.Label>
-                            <Form.Control
-                                type="email"
-                                placeholder="you@example.com"
-                                isInvalid={!!errors.email}
-                                {...register('email')}
-                            />
-                            <Form.Control.Feedback type="invalid">
-                                {errors.email?.message}
-                            </Form.Control.Feedback>
-                        </Form.Group>
-
-                        {/* Password */}
-                        <Form.Group className="mb-3" controlId="register-password">
-                            <Form.Label>Password</Form.Label>
-                            <Form.Control
-                                type="password"
-                                placeholder="········"
-                                isInvalid={!!errors.password}
-                                {...register('password')}
-                            />
-                            <Form.Control.Feedback type="invalid">
-                                {errors.password?.message}
-                            </Form.Control.Feedback>
-                        </Form.Group>
-
-                        {/* Confirm Password */}
-                        <Form.Group className="mb-4" controlId="register-confirm-password">
-                            <Form.Label>Confirm Password</Form.Label>
-                            <Form.Control
-                                type="password"
-                                placeholder="········"
-                                isInvalid={!!errors.confirmPassword}
-                                {...register('confirmPassword')}
-                            />
-                            <Form.Control.Feedback type="invalid">
-                                {errors.confirmPassword?.message}
-                            </Form.Control.Feedback>
-                        </Form.Group>
-
-                        <Button
-                            type="submit"
-                            variant="primary"
-                            className="w-100 mb-3"
-                            disabled={isSubmitting}
-                        >
-                            {isSubmitting ? <Spinner size="sm" animation="border" /> : 'Create Account'}
-                        </Button>
-                    </Form>
-
-                    {/* Divider */}
-                    <div className="d-flex align-items-center my-3">
-                        <hr className="flex-grow-1" />
-                        <span className="px-2 text-muted small">or</span>
-                        <hr className="flex-grow-1" />
+                {serverError && (
+                    <div className="auth-alert">
+                        <span>{serverError}</span>
+                        <button className="auth-alert-close" onClick={() => setServerError(null)}>✕</button>
                     </div>
+                )}
 
-                    {/* Google OAuth */}
-                    <div className="d-flex justify-content-center mb-3">
-                        <GoogleLogin
-                            onSuccess={handleGoogleSuccess}
-                            onError={() => setServerError('Google sign up failed. Please try again.')}
-                            useOneTap={false}
+                <form onSubmit={handleSubmit(onSubmit)} noValidate>
+                    {/* Username */}
+                    <div className="auth-field">
+                        <label className="auth-label" htmlFor="reg-username">Username</label>
+                        <input
+                            id="reg-username"
+                            type="text"
+                            placeholder="john_doe"
+                            className={`auth-input${errors.username ? ' is-invalid' : ''}`}
+                            {...register('username')}
                         />
+                        {errors.username && (
+                            <p className="auth-error-msg">⚠ {errors.username.message}</p>
+                        )}
                     </div>
 
-                    <p className="text-center text-muted small mb-0">
-                        Already have an account?{' '}
-                        <Link to="/login" className="text-decoration-none">
-                            Sign in
-                        </Link>
-                    </p>
-                </Card.Body>
-            </Card>
-        </Container>
+                    {/* Email */}
+                    <div className="auth-field">
+                        <label className="auth-label" htmlFor="reg-email">Email</label>
+                        <input
+                            id="reg-email"
+                            type="email"
+                            placeholder="you@example.com"
+                            className={`auth-input${errors.email ? ' is-invalid' : ''}`}
+                            {...register('email')}
+                        />
+                        {errors.email && (
+                            <p className="auth-error-msg">⚠ {errors.email.message}</p>
+                        )}
+                    </div>
+
+                    {/* Password */}
+                    <div className="auth-field">
+                        <label className="auth-label" htmlFor="reg-password">Password</label>
+                        <input
+                            id="reg-password"
+                            type="password"
+                            placeholder="········"
+                            className={`auth-input${errors.password ? ' is-invalid' : ''}`}
+                            {...register('password')}
+                        />
+                        {errors.password && (
+                            <p className="auth-error-msg">⚠ {errors.password.message}</p>
+                        )}
+                    </div>
+
+                    {/* Confirm Password */}
+                    <div className="auth-field">
+                        <label className="auth-label" htmlFor="reg-confirm">Confirm Password</label>
+                        <input
+                            id="reg-confirm"
+                            type="password"
+                            placeholder="········"
+                            className={`auth-input${errors.confirmPassword ? ' is-invalid' : ''}`}
+                            {...register('confirmPassword')}
+                        />
+                        {errors.confirmPassword && (
+                            <p className="auth-error-msg">⚠ {errors.confirmPassword.message}</p>
+                        )}
+                    </div>
+
+                    <button type="submit" className="auth-btn" disabled={isSubmitting}>
+                        {isSubmitting ? <span className="auth-spinner" /> : 'Create Account →'}
+                    </button>
+                </form>
+
+                <div className="auth-divider">
+                    <hr /><span>or sign up with</span><hr />
+                </div>
+
+                <div className="auth-google-wrap">
+                    <GoogleLogin
+                        onSuccess={handleGoogleSuccess}
+                        onError={() => setServerError('Google sign-up failed. Please try again.')}
+                        useOneTap={false}
+                        theme="filled_black"
+                        shape="pill"
+                        size="large"
+                    />
+                </div>
+
+                <p className="auth-footer">
+                    Already have an account? <Link to="/login">Sign in</Link>
+                </p>
+            </div>
+        </div>
     );
 }
