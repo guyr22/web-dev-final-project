@@ -1,25 +1,71 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { Navbar, Container } from 'react-bootstrap';
+import { Navbar, Container, Nav } from 'react-bootstrap';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import FeedPage from './pages/FeedPage';
-import { AuthProvider } from './context/AuthContext';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { ReactNode } from 'react';
 
-function App() {
-  return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Navbar bg="dark" data-bs-theme="dark" className="shadow-sm sticky-top">
-          <Container>
-            <Navbar.Brand href="/feed" className="fw-bold fs-4">ShlakshukGram</Navbar.Brand>
-          </Container>
-        </Navbar>
-        <Routes>
-          <Route path="/" element={<Navigate to="/feed" replace />} />
-          <Route path="/feed" element={<FeedPage />} />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
-  )
+// ---------------------------------------------------------------------------
+// Route guard – redirects unauthenticated users to /login
+// ---------------------------------------------------------------------------
+function PrivateRoute({ children }: { children: ReactNode }) {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
 }
 
-export default App
+// ---------------------------------------------------------------------------
+// App shell
+// ---------------------------------------------------------------------------
+function AppShell() {
+  const { isAuthenticated, logout } = useAuth();
+
+  return (
+    <BrowserRouter>
+      <Navbar bg="dark" data-bs-theme="dark" className="shadow-sm sticky-top">
+        <Container>
+          <Navbar.Brand href="/feed" className="fw-bold fs-4">ShlakshukGram</Navbar.Brand>
+          {isAuthenticated && (
+            <Nav className="ms-auto">
+              <Nav.Link onClick={logout} className="text-white-50">
+                Sign out
+              </Nav.Link>
+            </Nav>
+          )}
+        </Container>
+      </Navbar>
+      <Routes>
+        <Route path="/" element={<Navigate to="/feed" replace />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route
+          path="/feed"
+          element={
+            <PrivateRoute>
+              <FeedPage />
+            </PrivateRoute>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Root
+// ---------------------------------------------------------------------------
+function App() {
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? '';
+
+  return (
+    <GoogleOAuthProvider clientId={googleClientId}>
+      <AuthProvider>
+        <AppShell />
+      </AuthProvider>
+    </GoogleOAuthProvider>
+  );
+}
+
+export default App;
 
