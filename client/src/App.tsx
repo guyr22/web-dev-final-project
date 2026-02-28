@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 
 import { Navbar, Container, Nav } from 'react-bootstrap';
 import { GoogleOAuthProvider } from '@react-oauth/google';
@@ -64,7 +64,9 @@ function App() {
   return (
     <GoogleOAuthProvider clientId={googleClientId}>
       <AuthProvider>
-        <AppShell />
+        <BrowserRouter>
+          <AppShell />
+        </BrowserRouter>
       </AuthProvider>
     </GoogleOAuthProvider>
   );
