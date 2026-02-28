@@ -97,12 +97,26 @@ export const searchPosts = async (query: string): Promise<IPost[]> => {
     }
 };
 
+export const likePost = async (postId: string): Promise<void> => {
+    try {
+        await api.post(`/posts/${postId}/like`, {}, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+            }
+        });
+    } catch (error) {
+        console.error("Error liking post:", error);
+        throw error;
+    }
+}
+
 const postService = {
     getAllPosts,
     createPost,
     deletePost,
     updatePost,
     searchPosts,
+    likePost,
 };
 
 export default postService;

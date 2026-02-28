@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card, Badge, Button, Modal, Spinner, Form } from 'react-bootstrap';
 import { IPost } from '../../types';
 import postService from '../../services/post.service';
+import { useAuth } from '../../context/AuthContext';
 
 interface PostCardProps {
     post: IPost;
@@ -10,6 +11,15 @@ interface PostCardProps {
 }
 
 const PostCard = ({ post, onPostDeleted, onPostUpdated }: PostCardProps) => {
+    const { user } = useAuth();
+    
+    const currentUserId = user?._id || '';
+    const initialLiked = post.likes ? post.likes.includes(currentUserId) : false;
+    const initialLikesCount = post.likes?.length || 0;
+    
+    const [isLiked, setIsLiked] = useState<boolean>(initialLiked);
+    const [likesCount, setLikesCount] = useState<number>(initialLikesCount);
+
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
@@ -19,6 +29,21 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated }: PostCardProps) => {
     const [editContent, setEditContent] = useState(post.content);
     const [editFile, setEditFile] = useState<File | null>(null);
     const [editPreviewUrl, setEditPreviewUrl] = useState<string | null>(post.imgUrl || null);
+
+    const handleLikeClick = async () => {
+        if (!post._id) return;
+        
+        setIsLiked(prev => !prev);
+        setLikesCount(prev => isLiked ? prev - 1 : prev + 1);
+        
+        try {
+            await postService.likePost(post._id);
+        } catch (error) {
+            console.error('Failed to toggle like', error);
+            setIsLiked(initialLiked);
+            setLikesCount(initialLikesCount);
+        }
+    };
 
     const handleClose = () => setShowDeleteModal(false);
     const handleShow = () => setShowDeleteModal(true);
@@ -130,7 +155,13 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated }: PostCardProps) => {
                 </Card.Body>
                 <Card.Footer className="bg-white border-top d-flex justify-content-between align-items-center px-4 py-3">
                     <div className="d-flex gap-3 text-secondary small fw-medium">
-                        <span>❤️ {post.likes?.length || 0}</span>
+                        <span 
+                            onClick={handleLikeClick} 
+                            style={{ cursor: 'pointer', userSelect: 'none' }}
+                            title={isLiked ? "Unlike" : "Like"}
+                        >
+                            {isLiked ? '❤️' : '🤍'} {likesCount}
+                        </span>
                         <span>💬 {post.comments?.length || 0}</span>
                     </div>
                     <Button variant="outline-dark" size="sm" className="rounded-3 px-3" onClick={handleEditShow}>
