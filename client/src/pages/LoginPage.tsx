@@ -1,5 +1,4 @@
 import { useForm } from 'react-hook-form';
-import '../styles/auth.css';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useState } from 'react';
