@@ -10,8 +10,20 @@ import { swaggerSpec } from './config/swagger.config';
 const app = express();
 
 // Middleware
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',')
+    : ['http://localhost:5173'];
+
 app.use(cors({
-    exposedHeaders: ['X-Total-Count']
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error(`CORS: origin ${origin} not allowed`));
+        }
+    },
+    credentials: true,
+    exposedHeaders: ['X-Total-Count'],
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
