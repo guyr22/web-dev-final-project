@@ -17,6 +17,11 @@
       "**/__tests__/**/*.test.ts"
     ],
     "testTimeout": 30000,
+    "globals": {
+      "ts-jest": {
+        "tsconfig": "tsconfig.test.json"
+      }
+    },
     "collectCoverageFrom": [
       "src/**/*.ts",
       "!src/server.ts",

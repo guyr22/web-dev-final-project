@@ -1,6 +1,7 @@
 import request from 'supertest';
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { beforeAll, afterAll, beforeEach, afterEach, describe, it, expect } from '@jest/globals';
 import app from '../app';
 
 // Use AI mock mode so no real Gemini API calls are made
