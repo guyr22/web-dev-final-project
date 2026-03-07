@@ -5,6 +5,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import FeedPage from './pages/FeedPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import ProfilePage from './pages/ProfilePage';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ReactNode } from 'react';
 
@@ -31,7 +32,8 @@ function AppShell() {
           <Container>
             <Navbar.Brand href="/feed" className="fw-bold fs-4">ShlakshukGram</Navbar.Brand>
             {isAuthenticated && (
-              <Nav className="ms-auto">
+              <Nav className="ms-auto align-items-center">
+                <Nav.Link href="/profile" className="text-white-50 me-2">Profile</Nav.Link>
                 <Nav.Link onClick={logout} className="text-white-50">Sign out</Nav.Link>
               </Nav>
             )}
@@ -47,6 +49,14 @@ function AppShell() {
           element={
             <PrivateRoute>
               <FeedPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <PrivateRoute>
+              <ProfilePage />
             </PrivateRoute>
           }
         />
