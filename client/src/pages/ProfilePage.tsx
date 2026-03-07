@@ -5,7 +5,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAuth } from '../context/AuthContext';
 import userService from '../services/user.service';
-import { IUser } from '../types';
+import postService from '../services/post.service';
+import { IUser, IPost } from '../types';
+import PostCard from '../components/features/PostCard';
 
 // ---------------------------------------------------------------------------
 // Validation schema
@@ -56,6 +58,11 @@ export default function ProfilePage() {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const selectedFileRef = useRef<File | null>(null);
 
+    // User Posts state
+    const [userPosts, setUserPosts] = useState<IPost[]>([]);
+    const [loadingPosts, setLoadingPosts] = useState(false);
+    const [postsError, setPostsError] = useState<string | null>(null);
+
     const {
         register,
         handleSubmit,
@@ -75,6 +82,28 @@ export default function ProfilePage() {
             .catch(() => setFetchError('Failed to load profile. Please try again.'))
             .finally(() => setLoadingProfile(false));
     }, []);
+
+    // Fetch user's posts when profile is loaded
+    const fetchUserPosts = async () => {
+        if (!profile?._id) return;
+        setLoadingPosts(true);
+        setPostsError(null);
+        try {
+            const posts = await postService.getUserPosts(profile._id);
+            setUserPosts(posts);
+        } catch (error) {
+            console.error('Failed to load posts', error);
+            setPostsError('Failed to load posts.');
+        } finally {
+            setLoadingPosts(false);
+        }
+    };
+
+    useEffect(() => {
+        if (profile?._id) {
+            fetchUserPosts();
+        }
+    }, [profile?._id]);
 
     // When entering edit mode, pre-fill the form with current values
     useEffect(() => {
@@ -158,26 +187,26 @@ export default function ProfilePage() {
                     {/* Header banner */}
                     <div
                         style={{
-                            height: 120,
+                            height: 80,
                             background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%)',
                         }}
                     />
 
                     {/* Avatar */}
-                    <div className="d-flex justify-content-center" style={{ marginTop: -52 }}>
+                    <div className="d-flex justify-content-center" style={{ marginTop: -40 }}>
                         {avatarUrl ? (
                             <img
                                 src={avatarUrl}
                                 alt="avatar"
                                 className="rounded-circle border border-4 border-white shadow"
-                                style={{ width: 104, height: 104, objectFit: 'cover', background: '#f3f4f6' }}
+                                style={{ width: 80, height: 80, objectFit: 'cover', background: '#f3f4f6' }}
                             />
                         ) : (
                             <div
-                                className="rounded-circle border border-4 border-white shadow d-flex align-items-center justify-content-center fw-bold fs-3 text-white"
+                                className="rounded-circle border border-4 border-white shadow d-flex align-items-center justify-content-center fw-bold fs-4 text-white"
                                 style={{
-                                    width: 104,
-                                    height: 104,
+                                    width: 80,
+                                    height: 80,
                                     background: 'linear-gradient(135deg, #6366f1, #ec4899)',
                                 }}
                             >
@@ -187,26 +216,54 @@ export default function ProfilePage() {
                     </div>
 
                     {/* Info */}
-                    <div className="card-body text-center pt-3 pb-4 px-4">
-                        <h2 className="fw-bold fs-4 mb-1">{profile.username}</h2>
-                        <p className="text-muted small mb-3">{profile.email}</p>
+                    <div className="card-body text-center pt-2 pb-3 px-3">
+                        <h2 className="fw-bold fs-5 mb-1">{profile.username}</h2>
+                        <p className="text-muted small mb-2">{profile.email}</p>
 
                         {profile.bio ? (
-                            <p className="text-secondary fst-italic mb-4" style={{ whiteSpace: 'pre-wrap' }}>
+                            <p className="text-secondary small fst-italic mb-3" style={{ whiteSpace: 'pre-wrap' }}>
                                 "{profile.bio}"
                             </p>
                         ) : (
-                            <p className="text-muted small mb-4">No bio yet.</p>
+                            <p className="text-muted small mb-3">No bio yet.</p>
                         )}
 
                         <button
                             id="btn-edit-profile"
-                            className="btn btn-primary fw-semibold rounded-pill px-4"
+                            className="btn btn-outline-primary btn-sm fw-semibold rounded-pill px-4"
                             onClick={() => setEditing(true)}
                         >
                             Edit Profile
                         </button>
                     </div>
+                </div>
+
+                {/* User Posts Section */}
+                <div className="mt-5">
+                    <h3 className="fw-bold fs-4 mb-4" style={{ color: '#1f2937' }}>My Posts</h3>
+                    {loadingPosts ? (
+                        <div className="d-flex justify-content-center py-4">
+                            <Spinner animation="border" variant="primary" />
+                        </div>
+                    ) : postsError ? (
+                        <Alert variant="danger">{postsError}</Alert>
+                    ) : userPosts.length === 0 ? (
+                        <div className="text-center py-5 bg-white rounded-4 shadow-sm border-0">
+                            <h4 className="fw-semibold text-secondary mb-2">No posts yet</h4>
+                            <p className="text-muted mb-0">When you share something, it will appear here.</p>
+                        </div>
+                    ) : (
+                        <div className="d-flex flex-column gap-4">
+                            {userPosts.map(post => (
+                                <PostCard 
+                                    key={post._id} 
+                                    post={post} 
+                                    onPostDeleted={fetchUserPosts}
+                                    onPostUpdated={fetchUserPosts}
+                                />
+                            ))}
+                        </div>
+                    )}
                 </div>
             </Container>
         );
