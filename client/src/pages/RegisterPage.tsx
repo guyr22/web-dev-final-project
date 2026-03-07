@@ -18,7 +18,6 @@ const registerSchema = z
         email: z.string().email('Please enter a valid email address'),
         password: z.string().min(6, 'Password must be at least 6 characters'),
         confirmPassword: z.string(),
-        image: z.custom<FileList>().optional(),
     })
     .refine((d) => d.password === d.confirmPassword, {
         message: 'Passwords do not match',
@@ -41,16 +40,8 @@ export default function RegisterPage() {
     const onSubmit = async (values: RegisterFormValues) => {
         setServerError(null);
         try {
-            const formData = new FormData();
-            formData.append('username', values.username);
-            formData.append('email', values.email);
-            formData.append('password', values.password);
-            
-            if (values.image && values.image.length > 0) {
-                formData.append('image', values.image[0]);
-            }
-
-            const res = await authService.register(formData);
+            const { username, email, password } = values;
+            const res = await authService.register({ username, email, password });
             setTokens(res.accessToken, res.refreshToken);
             setUser(res.user);
             navigate('/feed');
@@ -156,21 +147,6 @@ export default function RegisterPage() {
                         />
                         {errors.confirmPassword && (
                             <div className="invalid-feedback">{errors.confirmPassword.message}</div>
-                        )}
-                    </div>
-
-                    {/* Profile Image (Optional) */}
-                    <div className="mb-3">
-                        <label className="form-label fw-semibold small" htmlFor="reg-image">Profile Image (Optional)</label>
-                        <input
-                            id="reg-image"
-                            type="file"
-                            accept="image/*"
-                            className={`form-control${errors.image ? ' is-invalid' : ''}`}
-                            {...register('image')}
-                        />
-                        {errors.image && (
-                            <div className="invalid-feedback">{errors.image.message as string}</div>
                         )}
                     </div>
 

@@ -51,21 +51,6 @@ class PostController extends BaseController<IPost> {
         }
     }
 
-    async getByUser(req: Request, res: Response) {
-        try {
-            const userId = req.params.userId;
-            const items = await this.model
-                .find({ owner: userId })
-                .sort({ createdAt: -1 })
-                .populate('owner', 'username imgUrl')
-                .populate('comments.userId', 'username imgUrl');
-            
-            res.status(200).json(items);
-        } catch (error) {
-            res.status(500).json({ message: (error as Error).message });
-        }
-    }
-
     async create(req: Request, res: Response) {
         try {
             const userId = (req as any).user?._id;

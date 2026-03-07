@@ -60,35 +60,6 @@ router.get('/', PostController.getAll.bind(PostController));
 
 /**
  * @swagger
- * /posts/user/{userId}:
- *   get:
- *     summary: Returns the list of all posts by a specific user
- *     tags: [Posts]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: userId
- *         schema:
- *           type: string
- *         required: true
- *         description: The user id
- *     responses:
- *       200:
- *         description: The list of the user's posts
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Post'
- *       500:
- *         description: Server error
- */
-router.get('/user/:userId', PostController.getByUser.bind(PostController));
-
-/**
- * @swagger
  * /posts/search:
  *   get:
  *     summary: Search posts using free text AI integration

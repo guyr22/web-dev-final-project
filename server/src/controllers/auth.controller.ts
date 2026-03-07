@@ -30,18 +30,11 @@ export class AuthController {
                 return res.status(400).json({ message: 'User already exists' });
             }
 
-            // Handle image upload if present
-            let imgUrl = undefined;
-            if (req.file) {
-                imgUrl = '/uploads/' + req.file.filename;
-            }
-
             // Create new user (password will be hashed by pre-save hook)
             const user = await User.create({
                 username,
                 email,
-                password,
-                imgUrl
+                password
             });
 
             // Generate tokens
