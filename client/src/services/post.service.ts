@@ -110,6 +110,20 @@ export const likePost = async (postId: string): Promise<void> => {
     }
 }
 
+export const addComment = async (postId: string, content: string): Promise<IPost> => {
+    try {
+        const response = await api.post<IPost>(`/posts/${postId}/comment`, { content }, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error adding comment:", error);
+        throw error;
+    }
+}
+
 const postService = {
     getAllPosts,
     createPost,
@@ -117,6 +131,7 @@ const postService = {
     updatePost,
     searchPosts,
     likePost,
+    addComment,
 };
 
 export default postService;

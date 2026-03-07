@@ -23,7 +23,8 @@ class PostController extends BaseController<IPost> {
                 .sort({ createdAt: -1 })
                 .skip(skip)
                 .limit(limit)
-                .populate('owner', 'username imgUrl');
+                .populate('owner', 'username imgUrl')
+                .populate('comments.userId', 'username imgUrl');
 
             res.set('X-Total-Count', totalCount.toString());
             res.send(items);
@@ -40,7 +41,9 @@ class PostController extends BaseController<IPost> {
             }
 
             const keywords = await AIService.parseSearchQuery(freeText);  
-            const items = await this.model.find({ tags: { $in: keywords } }).populate('owner', 'username imgUrl');
+            const items = await this.model.find({ tags: { $in: keywords } })
+                .populate('owner', 'username imgUrl')
+                .populate('comments.userId', 'username imgUrl');
             
             res.status(200).json(items);
         } catch (error) {
@@ -77,6 +80,10 @@ class PostController extends BaseController<IPost> {
             }
 
             const item = await this.model.create(postData);
+            await item.populate('owner', 'username imgUrl');
+            if (item.comments && item.comments.length > 0) {
+                await item.populate('comments.userId', 'username imgUrl');
+            }
             res.status(201).send(item);
         } catch (error) {
             res.status(400).json({ message: (error as Error).message });
@@ -111,7 +118,9 @@ class PostController extends BaseController<IPost> {
                 updateData.imgUrl = '/uploads/' + req.file.filename;
             }
 
-            const updatedPost = await this.model.findByIdAndUpdate(id, updateData, { new: true });
+            const updatedPost = await this.model.findByIdAndUpdate(id, updateData, { new: true })
+                .populate('owner', 'username imgUrl')
+                .populate('comments.userId', 'username imgUrl');
             res.json(updatedPost);
         } catch (error) {
             res.status(400).json({ message: (error as Error).message });
@@ -207,7 +216,9 @@ class PostController extends BaseController<IPost> {
                 postId,
                 { $push: { comments: comment } },
                 { new: true }
-            );
+            )
+            .populate('owner', 'username imgUrl')
+            .populate('comments.userId', 'username imgUrl');
 
             if (!updatedPost) {
                 return res.status(404).json({ message: 'Post not found' });

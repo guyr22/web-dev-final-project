@@ -8,7 +8,7 @@ export interface IUser {
 }
 
 export interface IComment {
-    userId: string;
+    userId: string | Omit<IOwner, 'imgUrl'> & { imgUrl?: string };
     content: string;
     createdAt: Date;
 }

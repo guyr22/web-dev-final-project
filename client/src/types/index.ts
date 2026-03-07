@@ -27,7 +27,7 @@ export interface IPost {
     likes?: string[];
     tags?: string[];
     comments?: {
-        userId: string;
+        userId: string | IOwner;
         content: string;
         createdAt?: string | Date;
     }[];

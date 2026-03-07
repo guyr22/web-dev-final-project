@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card, Badge, Button, Modal, Spinner, Form } from 'react-bootstrap';
+import { Card, Badge, Button, Modal, Spinner, Form, Collapse } from 'react-bootstrap';
 import { IPost } from '../../types';
 import postService from '../../services/post.service';
 import { useAuth } from '../../context/AuthContext';
@@ -10,6 +10,23 @@ interface PostCardProps {
     onPostUpdated?: () => void;
 }
 
+const getInitials = (username: string): string => {
+    if (!username) return '*';
+    return username
+        .split(' ')
+        .map((w) => w[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase();
+};
+
+const getImageUrl = (url?: string) => {
+    if (!url) return undefined;
+    if (/^(https?:\/\/|data:)/.test(url)) return url;
+    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+    return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+};
+
 const PostCard = ({ post, onPostDeleted, onPostUpdated }: PostCardProps) => {
     const { user } = useAuth();
     
@@ -19,6 +36,10 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated }: PostCardProps) => {
     
     const [isLiked, setIsLiked] = useState<boolean>(initialLiked);
     const [likesCount, setLikesCount] = useState<number>(initialLikesCount);
+    const [showComments, setShowComments] = useState(false);
+    const [localComments, setLocalComments] = useState(post.comments || []);
+    const [newComment, setNewComment] = useState("");
+    const [isSubmittingComment, setIsSubmittingComment] = useState(false);
 
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -42,6 +63,20 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated }: PostCardProps) => {
             console.error('Failed to toggle like', error);
             setIsLiked(initialLiked);
             setLikesCount(initialLikesCount);
+        }
+    };
+
+    const handleAddComment = async () => {
+        if (!post._id || !newComment.trim()) return;
+        setIsSubmittingComment(true);
+        try {
+            const updatedPost = await postService.addComment(post._id, newComment);
+            setLocalComments(updatedPost.comments || []);
+            setNewComment('');
+        } catch (error) {
+            console.error('Failed to add comment', error);
+        } finally {
+            setIsSubmittingComment(false);
         }
     };
 
@@ -132,9 +167,33 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated }: PostCardProps) => {
                 )}
                 <Card.Body className="px-4 py-3">
                     <Card.Title className="fw-bold fs-5">{post.title}</Card.Title>
-                    <p className="text-secondary small fw-semibold mb-2">
-                        {typeof post.owner === 'object' && post.owner !== null ? post.owner.username : post.owner}
-                    </p>
+                    <div className="d-flex align-items-center mb-2">
+                        {typeof post.owner === 'object' && post.owner !== null && (
+                            post.owner.imgUrl ? (
+                                <img 
+                                    src={getImageUrl(post.owner.imgUrl)} 
+                                    alt={post.owner.username} 
+                                    className="rounded-circle me-2 object-fit-cover shadow-sm bg-white" 
+                                    style={{ width: '28px', height: '28px' }} 
+                                />
+                            ) : (
+                                <div 
+                                    className="rounded-circle me-2 d-flex align-items-center justify-content-center fw-bold text-white shadow-sm"
+                                    style={{ 
+                                        width: '28px', 
+                                        height: '28px', 
+                                        fontSize: '12px',
+                                        background: 'linear-gradient(135deg, #6366f1, #ec4899)' 
+                                    }}
+                                >
+                                    {getInitials(post.owner.username)}
+                                </div>
+                            )
+                        )}
+                        <p className="text-secondary small fw-semibold mb-0">
+                            {typeof post.owner === 'object' && post.owner !== null ? post.owner.username : post.owner}
+                        </p>
+                    </div>
                     <Card.Text className="text-body-secondary">
                         {post.content}
                     </Card.Text>
@@ -162,12 +221,69 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated }: PostCardProps) => {
                         >
                             {isLiked ? '❤️' : '🤍'} {likesCount}
                         </span>
-                        <span>💬 {post.comments?.length || 0}</span>
+                        <span 
+                            onClick={() => setShowComments(!showComments)}
+                            style={{ cursor: 'pointer', userSelect: 'none' }}
+                            title={showComments ? "Hide Comments" : "Show Comments"}
+                        >
+                            💬 {localComments.length}
+                        </span>
                     </div>
-                    <Button variant="outline-dark" size="sm" className="rounded-3 px-3" onClick={handleEditShow}>
-                        Edit
-                    </Button>
+                    <div className="d-flex gap-2">
+                        <Button variant="outline-dark" size="sm" className="rounded-3 px-3" onClick={handleEditShow}>
+                            Edit
+                        </Button>
+                    </div>
                 </Card.Footer>
+                
+                <Collapse in={showComments}>
+                    <div className="bg-light px-4 py-3 border-top">
+                        <h6 className="mb-3 fw-bold">Comments</h6>
+                        {localComments.length > 0 ? (
+                            <ul className="list-unstyled mb-3">
+                                {localComments.map((comment, idx) => (
+                                    <li key={idx} className="mb-2 pb-2 border-bottom border-light-subtle">
+                                        <div className="fw-semibold small">
+                                            {typeof comment.userId === 'object' && comment.userId !== null 
+                                                ? (comment.userId as any).username 
+                                                : (comment.userId as string)}
+                                        </div>
+                                        <div className="text-secondary small">{comment.content}</div>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p className="text-muted small mb-3">No comments yet.</p>
+                        )}
+                        
+                        <div className="d-flex gap-2">
+                            <Form.Control 
+                                size="sm" 
+                                type="text" 
+                                placeholder="Add a comment..." 
+                                value={newComment}
+                                onChange={(e) => setNewComment(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') handleAddComment();
+                                }}
+                                disabled={isSubmittingComment}
+                            />
+                            <Button 
+                                variant="primary" 
+                                size="sm" 
+                                className="px-3"
+                                onClick={handleAddComment}
+                                disabled={!newComment.trim() || isSubmittingComment}
+                            >
+                                {isSubmittingComment ? (
+                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                ) : (
+                                    'Post'
+                                )}
+                            </Button>
+                        </div>
+                    </div>
+                </Collapse>
             </Card>
 
             {/* Delete Confirmation Modal */}
