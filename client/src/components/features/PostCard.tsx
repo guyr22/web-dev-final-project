@@ -34,6 +34,12 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated }: PostCardProps) => {
     const initialLiked = post.likes ? post.likes.includes(currentUserId) : false;
     const initialLikesCount = post.likes?.length || 0;
     
+    const isOwner = currentUserId && (
+        typeof post.owner === 'object' && post.owner !== null
+            ? post.owner._id === currentUserId
+            : post.owner === currentUserId
+    );
+
     const [isLiked, setIsLiked] = useState<boolean>(initialLiked);
     const [likesCount, setLikesCount] = useState<number>(initialLikesCount);
     const [showComments, setShowComments] = useState(false);
@@ -149,14 +155,16 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated }: PostCardProps) => {
     return (
         <>
             <Card className="border-0 shadow rounded-4 overflow-hidden position-relative">
-                <button 
-                    type="button" 
-                    className="btn-close position-absolute bg-light rounded-circle p-2 shadow-sm"
-                    style={{ top: '10px', right: '10px', zIndex: 10 }}
-                    onClick={handleShow}
-                    title="Delete Post"
-                    aria-label="Delete Post"
-                ></button>
+                {isOwner && (
+                    <button 
+                        type="button" 
+                        className="btn-close position-absolute bg-light rounded-circle p-2 shadow-sm"
+                        style={{ top: '10px', right: '10px', zIndex: 10 }}
+                        onClick={handleShow}
+                        title="Delete Post"
+                        aria-label="Delete Post"
+                    ></button>
+                )}
                 {post.imgUrl && (
                     <Card.Img 
                         variant="top" 
@@ -229,11 +237,13 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated }: PostCardProps) => {
                             💬 {localComments.length}
                         </span>
                     </div>
-                    <div className="d-flex gap-2">
-                        <Button variant="outline-dark" size="sm" className="rounded-3 px-3" onClick={handleEditShow}>
-                            Edit
-                        </Button>
-                    </div>
+                    {isOwner && (
+                        <div className="d-flex gap-2">
+                            <Button variant="outline-dark" size="sm" className="rounded-3 px-3" onClick={handleEditShow}>
+                                Edit
+                            </Button>
+                        </div>
+                    )}
                 </Card.Footer>
                 
                 <Collapse in={showComments}>
