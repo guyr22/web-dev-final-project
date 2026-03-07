@@ -29,7 +29,8 @@ const postSchema = new Schema<IPost>({
     },
     comments: [{
         userId: {
-            type: String,
+            type: Schema.Types.ObjectId,
+            ref: 'User',
             required: true
         },
         content: {
