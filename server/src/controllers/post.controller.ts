@@ -99,6 +99,16 @@ class PostController extends BaseController<IPost> {
                 return res.status(404).json({ message: 'Post not found' });
             }
 
+            const userId = (req as any).user?._id;
+            if (!userId) {
+                return res.status(401).json({ message: 'Unauthorized' });
+            }
+
+            const postOwnerId = post.owner.toString();
+            if (postOwnerId !== userId.toString()) {
+                return res.status(403).json({ message: 'You are not authorized to update this post' });
+            }
+
             const updateData: Partial<IPost> = { ...req.body };
 
             // Handle new image upload
@@ -134,6 +144,16 @@ class PostController extends BaseController<IPost> {
             
             if (!post) {
                 return res.status(404).json({ message: 'Post not found' });
+            }
+
+            const userId = (req as any).user?._id;
+            if (!userId) {
+                return res.status(401).json({ message: 'Unauthorized' });
+            }
+
+            const postOwnerId = post.owner.toString();
+            if (postOwnerId !== userId.toString()) {
+                return res.status(403).json({ message: 'You are not authorized to delete this post' });
             }
 
             // Delete associated image file if exists
