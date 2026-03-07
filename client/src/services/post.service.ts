@@ -29,6 +29,28 @@ export const getAllPosts = async (page: number = 1, limit: number = 10): Promise
     }
 };
 
+export const getUserPosts = async (userId: string): Promise<IPost[]> => {
+    try {
+        const response = await api.get<IPost[]>(`/posts/user/${userId}`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+            }
+        });
+        
+        const posts = response.data.map(post => ({
+            ...post,
+            imgUrl: post.imgUrl && !post.imgUrl.startsWith('http') 
+                ? `${import.meta.env.VITE_API_URL}${post.imgUrl}` 
+                : post.imgUrl
+        }));
+        
+        return posts;
+    } catch (error) {
+        console.error("Error fetching user posts:", error);
+        throw error;
+    }
+};
+
 export const createPost = async (formData: FormData): Promise<IPost> => {
     try {
         const response = await api.post<IPost>('/posts', formData, {
@@ -126,6 +148,7 @@ export const addComment = async (postId: string, content: string): Promise<IPost
 
 const postService = {
     getAllPosts,
+    getUserPosts,
     createPost,
     deletePost,
     updatePost,
