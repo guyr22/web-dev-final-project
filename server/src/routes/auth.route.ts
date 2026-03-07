@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import authController from '../controllers/auth.controller';
+import { upload } from '../middleware/fileUpload';
 
 const router = Router();
 
@@ -10,13 +11,24 @@ const router = Router();
  *     tags:
  *       - Authentication
  *     summary: Register a new user
- *     description: Create a new user account with username, email, and password
+ *     description: Create a new user account with username, email, and password. Optionally upload a profile image.
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
- *             $ref: '#/components/schemas/RegisterRequest'
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *               image:
+ *                 type: string
+ *                 format: binary
  *     responses:
  *       201:
  *         description: User successfully registered
@@ -37,7 +49,7 @@ const router = Router();
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/register', authController.register.bind(authController));
+router.post('/register', upload.single('image'), authController.register.bind(authController));
 
 /**
  * @swagger

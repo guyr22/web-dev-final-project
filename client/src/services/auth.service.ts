@@ -6,12 +6,6 @@ interface LoginPayload {
     password: string;
 }
 
-interface RegisterPayload {
-    username: string;
-    email: string;
-    password: string;
-}
-
 const authService = {
     /**
      * Login with email + password.
@@ -24,8 +18,9 @@ const authService = {
 
     /**
      * Register a new account.
+     * Accepts FormData to allow for profile image uploads.
      */
-    async register(payload: RegisterPayload): Promise<IAuthResponse> {
+    async register(payload: FormData): Promise<IAuthResponse> {
         const { data } = await api.post<IAuthResponse>('/auth/register', payload);
         return data;
     },
