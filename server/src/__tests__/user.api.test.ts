@@ -100,4 +100,41 @@ describe('PUT /user/profile', () => {
         expect(res.status).toBe(200);
         expect(res.body.bio).toBe('');
     });
+
+    it('updates the username successfully', async () => {
+        const res = await request(app)
+            .put('/user/profile')
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send({ username: 'newusername' });
+
+        expect(res.status).toBe(200);
+        expect(res.body.username).toBe('newusername');
+    });
+
+    it('returns 409 when the new username is already taken', async () => {
+        // Register a second user so their username is taken
+        await request(app).post('/auth/register').send({
+            username: 'takenuser',
+            email: 'taken@example.com',
+            password: 'pass1234',
+        });
+
+        const res = await request(app)
+            .put('/user/profile')
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send({ username: 'takenuser' });
+
+        expect(res.status).toBe(409);
+        expect(res.body.message).toMatch(/already taken/i);
+    });
+
+    it('returns 400 when username is shorter than 3 characters', async () => {
+        const res = await request(app)
+            .put('/user/profile')
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send({ username: 'ab' });
+
+        expect(res.status).toBe(400);
+        expect(res.body.message).toMatch(/3 characters/i);
+    });
 });
