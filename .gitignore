@@ -34,13 +34,16 @@ logs
 *.sln
 *.sw?
 
-
-/*.md
-
 # Image Uploads
 server/public/uploads/
 
-# SSL Certificates
+# SSL Certificates (generated on server, never committed)
 server/certs/*.pem
 server/certs/*.key
 server/certs/*.crt
+
+# Client production env (has real domain; use client/.env.production.example as template)
+client/.env.production
+
+# Built frontend copied into server by deploy.sh
+server/public/client/

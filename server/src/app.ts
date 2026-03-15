@@ -50,4 +50,13 @@ app.get('/health', (req, res) => {
     res.send('Server is healthy');
 });
 
+// In production: serve the built React SPA and handle client-side routing
+if (process.env.NODE_ENV === 'production') {
+    const clientBuildPath = path.join(__dirname, '../public/client');
+    app.use(express.static(clientBuildPath));
+    app.get('*', (_req, res) => {
+        res.sendFile(path.join(clientBuildPath, 'index.html'));
+    });
+}
+
 export default app;
