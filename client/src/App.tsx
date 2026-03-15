@@ -6,6 +6,7 @@ import FeedPage from './pages/FeedPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProfilePage from './pages/ProfilePage';
+import CommentsPage from './pages/CommentsPage';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ReactNode } from 'react';
 
@@ -57,6 +58,14 @@ function AppShell() {
           element={
             <PrivateRoute>
               <ProfilePage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/posts/:postId/comments"
+          element={
+            <PrivateRoute>
+              <CommentsPage />
             </PrivateRoute>
           }
         />

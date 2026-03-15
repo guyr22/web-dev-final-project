@@ -40,11 +40,11 @@ class PostController extends BaseController<IPost> {
                 return res.status(400).json({ message: 'Search query "q" is required' });
             }
 
-            const keywords = await AIService.parseSearchQuery(freeText);  
+            const keywords = await AIService.parseSearchQuery(freeText);
             const items = await this.model.find({ tags: { $in: keywords } })
                 .populate('owner', 'username imgUrl')
                 .populate('comments.userId', 'username imgUrl');
-            
+
             res.status(200).json(items);
         } catch (error) {
             res.status(500).json({ message: (error as Error).message });
@@ -59,8 +59,25 @@ class PostController extends BaseController<IPost> {
                 .sort({ createdAt: -1 })
                 .populate('owner', 'username imgUrl')
                 .populate('comments.userId', 'username imgUrl');
-            
+
             res.status(200).json(items);
+        } catch (error) {
+            res.status(500).json({ message: (error as Error).message });
+        }
+    }
+
+    async getById(req: Request, res: Response) {
+        try {
+            const id = req.params.id;
+            const item = await this.model.findById(id)
+                .populate('owner', 'username imgUrl')
+                .populate('comments.userId', 'username imgUrl');
+
+            if (!item) {
+                return res.status(404).json({ message: 'Post not found' });
+            }
+
+            res.status(200).json(item);
         } catch (error) {
             res.status(500).json({ message: (error as Error).message });
         }
@@ -76,7 +93,7 @@ class PostController extends BaseController<IPost> {
 
             const content = req.body.content;
             let tags: string[] = [];
-            
+
             // Generate tags using AI Service
             if (content) {
                 tags = await AIService.generateTags(content);
@@ -156,7 +173,7 @@ class PostController extends BaseController<IPost> {
         try {
             const id = req.params.id;
             const post = await this.model.findById(id);
-            
+
             if (!post) {
                 return res.status(404).json({ message: 'Post not found' });
             }
@@ -174,7 +191,7 @@ class PostController extends BaseController<IPost> {
             // Delete associated image file if exists
             if (post.imgUrl) {
                 try {
-                     // Get filename from URL
+                    // Get filename from URL
                     const filename = post.imgUrl.split('/').pop();
                     if (filename) {
                         const filePath = path.join(__dirname, '../../public/uploads', filename);
@@ -204,7 +221,7 @@ class PostController extends BaseController<IPost> {
 
             // Check if user already liked the post
             const isLiked = post.likes && post.likes.includes(userId);
-            
+
             let updatedPost;
             if (isLiked) {
                 // Unlike
@@ -222,9 +239,9 @@ class PostController extends BaseController<IPost> {
                 );
             }
 
-            res.json({ 
+            res.json({
                 likes: updatedPost?.likes?.length || 0,
-                isLiked: !isLiked 
+                isLiked: !isLiked
             });
         } catch (error) {
             res.status(500).json({ message: (error as Error).message });
@@ -252,8 +269,8 @@ class PostController extends BaseController<IPost> {
                 { $push: { comments: comment } },
                 { new: true }
             )
-            .populate('owner', 'username imgUrl')
-            .populate('comments.userId', 'username imgUrl');
+                .populate('owner', 'username imgUrl')
+                .populate('comments.userId', 'username imgUrl');
 
             if (!updatedPost) {
                 return res.status(404).json({ message: 'Post not found' });

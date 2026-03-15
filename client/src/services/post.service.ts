@@ -18,8 +18,8 @@ export const getAllPosts = async (page: number = 1, limit: number = 10): Promise
         // Transform image URLs to be absolute if they are relative
         const posts = response.data.map(post => ({
             ...post,
-            imgUrl: post.imgUrl && !post.imgUrl.startsWith('http') 
-                ? `${import.meta.env.VITE_API_URL}${post.imgUrl}` 
+            imgUrl: post.imgUrl && !post.imgUrl.startsWith('http')
+                ? `${import.meta.env.VITE_API_URL}${post.imgUrl}`
                 : post.imgUrl
         }));
         return { posts, totalCount };
@@ -36,14 +36,14 @@ export const getUserPosts = async (userId: string): Promise<IPost[]> => {
                 Authorization: `Bearer ${localStorage.getItem('accessToken')}`
             }
         });
-        
+
         const posts = response.data.map(post => ({
             ...post,
-            imgUrl: post.imgUrl && !post.imgUrl.startsWith('http') 
-                ? `${import.meta.env.VITE_API_URL}${post.imgUrl}` 
+            imgUrl: post.imgUrl && !post.imgUrl.startsWith('http')
+                ? `${import.meta.env.VITE_API_URL}${post.imgUrl}`
                 : post.imgUrl
         }));
-        
+
         return posts;
     } catch (error) {
         console.error("Error fetching user posts:", error);
@@ -66,6 +66,26 @@ export const createPost = async (formData: FormData): Promise<IPost> => {
         throw error;
     }
 }
+
+export const getPostById = async (postId: string): Promise<IPost> => {
+    try {
+        const response = await api.get<IPost>(`/posts/${postId}`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+            }
+        });
+        const post = response.data;
+        return {
+            ...post,
+            imgUrl: post.imgUrl && !post.imgUrl.startsWith('http')
+                ? `${import.meta.env.VITE_API_URL}${post.imgUrl}`
+                : post.imgUrl
+        };
+    } catch (error) {
+        console.error("Error fetching post by ID:", error);
+        throw error;
+    }
+};
 
 export const deletePost = async (postId: string): Promise<void> => {
     try {
@@ -104,8 +124,8 @@ export const searchPosts = async (query: string): Promise<IPost[]> => {
         });
         const posts = response.data.map(post => ({
             ...post,
-            imgUrl: post.imgUrl && !post.imgUrl.startsWith('http') 
-                ? `${import.meta.env.VITE_API_URL}${post.imgUrl}` 
+            imgUrl: post.imgUrl && !post.imgUrl.startsWith('http')
+                ? `${import.meta.env.VITE_API_URL}${post.imgUrl}`
                 : post.imgUrl
         })).sort((a, b) => {
             const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
@@ -149,6 +169,7 @@ export const addComment = async (postId: string, content: string): Promise<IPost
 const postService = {
     getAllPosts,
     getUserPosts,
+    getPostById,
     createPost,
     deletePost,
     updatePost,

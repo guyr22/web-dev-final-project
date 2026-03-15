@@ -149,6 +149,35 @@ router.post('/', upload.single('image'), PostController.create.bind(PostControll
 /**
  * @swagger
  * /posts/{id}:
+ *   get:
+ *     summary: Get a single post by id
+ *     tags: [Posts]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The post id
+ *     responses:
+ *       200:
+ *         description: The post data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Post'
+ *       404:
+ *         description: Post not found
+ *       500:
+ *         description: Server error
+ */
+router.get('/:id', PostController.getById.bind(PostController));
+
+/**
+ * @swagger
+ * /posts/{id}:
  *   put:
  *     summary: Update a post
  *     tags: [Posts]
