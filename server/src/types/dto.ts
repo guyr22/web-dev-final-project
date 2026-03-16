@@ -27,6 +27,7 @@ export interface IPost {
     imgUrl?: string;
     likes?: string[]; // Array of User IDs
     tags?: string[];
+    embedding?: number[];
     comments?: IComment[];
     createdAt?: Date;
 }
