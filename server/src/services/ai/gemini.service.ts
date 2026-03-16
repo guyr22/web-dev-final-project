@@ -85,7 +85,6 @@ export class GeminiAIService implements IAIService {
                 return [];
             }
             
-            // We use the gemini-embedding-001 model for embeddings as it replaced the older embedding-001 and text-embedding-004 models
             const embeddingModel = this.genAI!.getGenerativeModel({ model: "gemini-embedding-001"});
             
             const result = await embeddingModel.embedContent(text);
