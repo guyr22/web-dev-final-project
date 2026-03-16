@@ -16,10 +16,19 @@ class PostController extends BaseController<IPost> {
             const page = parseInt(req.query.page as string) || 1;
             const limit = parseInt(req.query.limit as string) || 10;
             const skip = (page - 1) * limit;
+            const filterType = req.query.filter as string;
+            const userId = (req as any).user?._id;
 
-            const totalCount = await this.model.countDocuments();
+            let filterQuery: any = {};
+            if (filterType === 'mine' && userId) {
+                filterQuery.owner = userId;
+            } else if (filterType === 'others' && userId) {
+                filterQuery.owner = { $ne: userId };
+            }
+
+            const totalCount = await this.model.countDocuments(filterQuery);
             const items = await this.model
-                .find()
+                .find(filterQuery)
                 .sort({ createdAt: -1 })
                 .skip(skip)
                 .limit(limit)
@@ -36,14 +45,25 @@ class PostController extends BaseController<IPost> {
     async searchPosts(req: Request, res: Response) {
         try {
             const freeText = req.query.q as string;
+            const filterType = req.query.filter as string;
+            const userId = (req as any).user?._id;
+
             if (!freeText) {
                 return res.status(400).json({ message: 'Search query "q" is required' });
             }
 
             const keywords = await AIService.parseSearchQuery(freeText);
             const searchRegex = new RegExp(freeText, 'i');
-            
+
+            let filterQuery: any = {};
+            if (filterType === 'mine' && userId) {
+                filterQuery.owner = userId;
+            } else if (filterType === 'others' && userId) {
+                filterQuery.owner = { $ne: userId };
+            }
+
             const items = await this.model.find({
+                ...filterQuery,
                 $or: [
                     { title: { $regex: searchRegex } },
                     { content: { $regex: searchRegex } },

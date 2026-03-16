@@ -12,6 +12,8 @@ interface UsePostsResult {
     hasMore: boolean;
     isSearching: boolean;
     searchQuery: string;
+    postFilter: 'all' | 'mine' | 'others';
+    setPostFilter: (filter: 'all' | 'mine' | 'others') => void;
     refreshPosts: () => Promise<void>;
     loadMore: () => Promise<void>;
     performSearch: (query: string) => Promise<void>;
@@ -27,6 +29,7 @@ const usePosts = (): UsePostsResult => {
     const [hasMore, setHasMore] = useState<boolean>(true);
     const [isSearching, setIsSearching] = useState<boolean>(false);
     const [searchQuery, setSearchQuery] = useState<string>('');
+    const [postFilter, setPostFilter] = useState<'all' | 'mine' | 'others'>('all');
 
     const fetchPosts = useCallback(async () => {
         setLoading(true);
@@ -35,7 +38,7 @@ const usePosts = (): UsePostsResult => {
         setSearchQuery('');
         setPage(1);
         try {
-            const { posts: data, totalCount } = await postService.getAllPosts(1, POSTS_PER_PAGE);
+            const { posts: data, totalCount } = await postService.getAllPosts(1, POSTS_PER_PAGE, postFilter);
             setPosts(data);
             setHasMore(data.length < totalCount);
         } catch (err: any) {
@@ -43,7 +46,7 @@ const usePosts = (): UsePostsResult => {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [postFilter]);
 
     const loadMore = useCallback(async () => {
         if (loadingMore || !hasMore || isSearching) return;
@@ -52,7 +55,7 @@ const usePosts = (): UsePostsResult => {
         setLoadingMore(true);
         setError(null);
         try {
-            const { posts: data } = await postService.getAllPosts(nextPage, POSTS_PER_PAGE);
+            const { posts: data } = await postService.getAllPosts(nextPage, POSTS_PER_PAGE, postFilter);
             setPosts(prev => [...prev, ...data]);
             setPage(nextPage);
             if (data.length < POSTS_PER_PAGE) {
@@ -63,7 +66,7 @@ const usePosts = (): UsePostsResult => {
         } finally {
             setLoadingMore(false);
         }
-    }, [page, loadingMore, hasMore, isSearching]);
+    }, [page, loadingMore, hasMore, isSearching, postFilter]);
 
     const performSearch = useCallback(async (query: string) => {
         if (!query.trim()) {
@@ -77,14 +80,14 @@ const usePosts = (): UsePostsResult => {
         setSearchQuery(query);
         setHasMore(false);
         try {
-            const data = await postService.searchPosts(query);
+            const data = await postService.searchPosts(query, postFilter);
             setPosts(data);
         } catch (err: any) {
             setError(err.message || 'Failed to search posts');
         } finally {
             setLoading(false);
         }
-    }, [fetchPosts]);
+    }, [fetchPosts, postFilter]);
 
     const clearSearch = useCallback(() => {
         fetchPosts();
@@ -102,6 +105,8 @@ const usePosts = (): UsePostsResult => {
         hasMore,
         isSearching, 
         searchQuery, 
+        postFilter,
+        setPostFilter,
         refreshPosts: fetchPosts,
         loadMore,
         performSearch,

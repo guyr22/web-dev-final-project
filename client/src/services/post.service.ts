@@ -6,10 +6,15 @@ export interface PaginatedPostsResult {
     totalCount: number;
 }
 
-export const getAllPosts = async (page: number = 1, limit: number = 10): Promise<PaginatedPostsResult> => {
+export const getAllPosts = async (page: number = 1, limit: number = 10, filter: 'all' | 'mine' | 'others' = 'all'): Promise<PaginatedPostsResult> => {
     try {
+        const params: any = { page, limit };
+        if (filter !== 'all') {
+            params.filter = filter;
+        }
+        
         const response = await api.get<IPost[]>('/posts', {
-            params: { page, limit },
+            params,
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('accessToken')}`
             }
@@ -115,9 +120,14 @@ export const updatePost = async (postId: string, formData: FormData): Promise<IP
     }
 }
 
-export const searchPosts = async (query: string): Promise<IPost[]> => {
+export const searchPosts = async (query: string, filter: 'all' | 'mine' | 'others' = 'all'): Promise<IPost[]> => {
     try {
-        const response = await api.get<IPost[]>(`/posts/search?q=${encodeURIComponent(query)}`, {
+        let url = `/posts/search?q=${encodeURIComponent(query)}`;
+        if (filter !== 'all') {
+            url += `&filter=${filter}`;
+        }
+        
+        const response = await api.get<IPost[]>(url, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('accessToken')}`
             }

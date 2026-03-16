@@ -5,7 +5,7 @@ import CreatePost from '../components/features/CreatePost';
 import usePosts from '../hooks/usePosts';
 
 const FeedPage = () => {
-    const { posts, loading, loadingMore, error, hasMore, isSearching, searchQuery, refreshPosts, loadMore, performSearch, clearSearch } = usePosts();
+    const { posts, loading, loadingMore, error, hasMore, isSearching, searchQuery, postFilter, setPostFilter, refreshPosts, loadMore, performSearch, clearSearch } = usePosts();
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [searchInput, setSearchInput] = useState('');
 
@@ -74,16 +74,31 @@ const FeedPage = () => {
                 </InputGroup>
             </Form>
 
-            {isSearching && (
-                <div className="d-flex justify-content-between align-items-center mb-4 p-3 bg-light rounded-3 border">
-                    <span className="fw-medium text-primary">
-                        Showing results for: "{searchQuery}"
-                    </span>
-                    <Button variant="outline-secondary" size="sm" onClick={handleClearSearch} className="fw-semibold">
-                        Clear Search
-                    </Button>
+            <div className="d-flex flex-column gap-3 mb-4">
+                <div className="d-flex justify-content-center">
+                    <div className="btn-group shadow-sm" role="group" aria-label="Post Filter">
+                        <input type="radio" className="btn-check" name="btnradio" id="btnradio1" autoComplete="off" checked={postFilter === 'all'} onChange={() => setPostFilter('all')} />
+                        <label className="btn btn-outline-primary" htmlFor="btnradio1">All Posts</label>
+
+                        <input type="radio" className="btn-check" name="btnradio" id="btnradio2" autoComplete="off" checked={postFilter === 'mine'} onChange={() => setPostFilter('mine')} />
+                        <label className="btn btn-outline-primary" htmlFor="btnradio2">My Posts</label>
+
+                        <input type="radio" className="btn-check" name="btnradio" id="btnradio3" autoComplete="off" checked={postFilter === 'others'} onChange={() => setPostFilter('others')} />
+                        <label className="btn btn-outline-primary" htmlFor="btnradio3">Others' Posts</label>
+                    </div>
                 </div>
-            )}
+
+                {isSearching && (
+                    <div className="d-flex justify-content-between align-items-center p-3 bg-light rounded-3 border">
+                        <span className="fw-medium text-primary">
+                            Search results for: "{searchQuery}"
+                        </span>
+                        <Button variant="outline-secondary" size="sm" onClick={handleClearSearch} className="fw-semibold">
+                            Clear Search
+                        </Button>
+                    </div>
+                )}
+            </div>
 
             <Modal show={showCreateModal} onHide={handleClose} size="lg" centered>
                 <Modal.Header closeButton className="border-bottom-0 pb-0">
