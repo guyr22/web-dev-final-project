@@ -15,7 +15,7 @@ const userService = {
      * Pass a FormData when uploading a new avatar image;
      * pass a plain object when only updating bio / imgUrl text.
      */
-    async updateProfile(payload: FormData | { bio?: string; imgUrl?: string }): Promise<IUser> {
+    async updateProfile(payload: FormData | { username?: string; bio?: string; imgUrl?: string }): Promise<IUser> {
         const isFormData = payload instanceof FormData;
         const { data } = await api.put<IUser>('/user/profile', payload, {
             headers: isFormData ? { 'Content-Type': 'multipart/form-data' } : {},

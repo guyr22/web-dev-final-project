@@ -13,6 +13,7 @@ import PostCard from '../components/features/PostCard';
 // Validation schema
 // ---------------------------------------------------------------------------
 const editSchema = z.object({
+    username: z.string().min(3, 'Username must be at least 3 characters'),
     bio: z.string().max(300, 'Bio must be at most 300 characters').optional(),
 });
 
@@ -108,7 +109,7 @@ export default function ProfilePage() {
     // When entering edit mode, pre-fill the form with current values
     useEffect(() => {
         if (editing && profile) {
-            reset({ bio: profile.bio ?? '' });
+            reset({ username: profile.username, bio: profile.bio ?? '' });
             setAvatarPreview(resolveAvatarUrl(profile.imgUrl));
             selectedFileRef.current = null;
         }
@@ -131,16 +132,18 @@ export default function ProfilePage() {
             if (selectedFileRef.current) {
                 const fd = new FormData();
                 fd.append('avatar', selectedFileRef.current);
+                fd.append('username', values.username);
                 if (values.bio !== undefined) fd.append('bio', values.bio);
                 updated = await userService.updateProfile(fd);
             } else {
-                updated = await userService.updateProfile({ bio: values.bio });
+                updated = await userService.updateProfile({ username: values.username, bio: values.bio });
             }
             setProfile(updated);
             setUser(updated);
             setEditing(false);
-        } catch {
-            setServerError('Failed to save changes. Please try again.');
+        } catch (err: any) {
+            const msg = err?.response?.data?.message;
+            setServerError(msg ?? 'Failed to save changes. Please try again.');
         }
     };
 
@@ -255,9 +258,9 @@ export default function ProfilePage() {
                     ) : (
                         <div className="d-flex flex-column gap-4">
                             {userPosts.map(post => (
-                                <PostCard 
-                                    key={post._id} 
-                                    post={post} 
+                                <PostCard
+                                    key={post._id}
+                                    post={post}
                                     onPostDeleted={fetchUserPosts}
                                     onPostUpdated={fetchUserPosts}
                                 />
@@ -321,8 +324,22 @@ export default function ProfilePage() {
                     </button>
                 </div>
 
-                {/* Bio field */}
+                {/* Form fields */}
                 <form onSubmit={handleSubmit(onSubmit)} noValidate>
+                    <div className="mb-3">
+                        <label className="form-label fw-semibold small" htmlFor="profile-username">
+                            Username
+                        </label>
+                        <input
+                            id="profile-username"
+                            type="text"
+                            placeholder="Your username"
+                            className={`form-control rounded-3${errors.username ? ' is-invalid' : ''}`}
+                            {...register('username')}
+                        />
+                        {errors.username && <div className="invalid-feedback">{errors.username.message}</div>}
+                    </div>
+
                     <div className="mb-4">
                         <label className="form-label fw-semibold small" htmlFor="profile-bio">
                             Bio

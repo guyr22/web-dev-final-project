@@ -29,14 +29,28 @@ export class UserController {
 
     /**
      * PUT /user/profile
-     * Updates the authenticated user's avatar (imgUrl) and/or bio
-     * Accepts optional multipart file upload for avatar
+     * Updates the authenticated user's avatar (imgUrl), bio, and/or username.
+     * Accepts optional multipart file upload for avatar.
      */
     async updateProfile(req: Request, res: Response) {
         try {
             const userId = (req as any).user._id;
 
-            const updateData: { imgUrl?: string; bio?: string } = {};
+            const updateData: { imgUrl?: string; bio?: string; username?: string } = {};
+
+            // Handle username update
+            if (req.body.username !== undefined) {
+                const newUsername: string = req.body.username.trim();
+                if (newUsername.length < 3) {
+                    return res.status(400).json({ message: 'Username must be at least 3 characters long' });
+                }
+                // Check for duplicates (exclude current user)
+                const existing = await User.findOne({ username: newUsername, _id: { $ne: userId } });
+                if (existing) {
+                    return res.status(409).json({ message: 'Username is already taken' });
+                }
+                updateData.username = newUsername;
+            }
 
             // If a file was uploaded, set the imgUrl to the file path
             if ((req as any).file) {
