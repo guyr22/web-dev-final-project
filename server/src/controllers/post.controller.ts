@@ -41,7 +41,15 @@ class PostController extends BaseController<IPost> {
             }
 
             const keywords = await AIService.parseSearchQuery(freeText);
-            const items = await this.model.find({ tags: { $in: keywords } })
+            const searchRegex = new RegExp(freeText, 'i');
+            
+            const items = await this.model.find({
+                $or: [
+                    { title: { $regex: searchRegex } },
+                    { content: { $regex: searchRegex } },
+                    { tags: { $in: keywords } }
+                ]
+            })
                 .populate('owner', 'username imgUrl')
                 .populate('comments.userId', 'username imgUrl');
 
