@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Card, Badge, Button, Modal, Spinner, Form, Collapse } from 'react-bootstrap';
+import { Card, Badge, Button, Modal, Spinner, Form } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import { IPost } from '../../types';
 import postService from '../../services/post.service';
 import { useAuth } from '../../context/AuthContext';
@@ -29,11 +30,11 @@ const getImageUrl = (url?: string) => {
 
 const PostCard = ({ post, onPostDeleted, onPostUpdated }: PostCardProps) => {
     const { user } = useAuth();
-    
+
     const currentUserId = user?._id || '';
     const initialLiked = post.likes ? post.likes.includes(currentUserId) : false;
     const initialLikesCount = post.likes?.length || 0;
-    
+
     const isOwner = currentUserId && (
         typeof post.owner === 'object' && post.owner !== null
             ? post.owner._id === currentUserId
@@ -42,11 +43,6 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated }: PostCardProps) => {
 
     const [isLiked, setIsLiked] = useState<boolean>(initialLiked);
     const [likesCount, setLikesCount] = useState<number>(initialLikesCount);
-    const [showComments, setShowComments] = useState(false);
-    const [localComments, setLocalComments] = useState(post.comments || []);
-    const [newComment, setNewComment] = useState("");
-    const [isSubmittingComment, setIsSubmittingComment] = useState(false);
-
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
@@ -59,30 +55,16 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated }: PostCardProps) => {
 
     const handleLikeClick = async () => {
         if (!post._id) return;
-        
+
         setIsLiked(prev => !prev);
         setLikesCount(prev => isLiked ? prev - 1 : prev + 1);
-        
+
         try {
             await postService.likePost(post._id);
         } catch (error) {
             console.error('Failed to toggle like', error);
             setIsLiked(initialLiked);
             setLikesCount(initialLikesCount);
-        }
-    };
-
-    const handleAddComment = async () => {
-        if (!post._id || !newComment.trim()) return;
-        setIsSubmittingComment(true);
-        try {
-            const updatedPost = await postService.addComment(post._id, newComment);
-            setLocalComments(updatedPost.comments || []);
-            setNewComment('');
-        } catch (error) {
-            console.error('Failed to add comment', error);
-        } finally {
-            setIsSubmittingComment(false);
         }
     };
 
@@ -113,7 +95,7 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated }: PostCardProps) => {
 
     const handleDelete = async () => {
         if (!post._id) return;
-        
+
         setIsDeleting(true);
         try {
             await postService.deletePost(post._id);
@@ -156,8 +138,8 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated }: PostCardProps) => {
         <>
             <Card className="border-0 shadow rounded-4 overflow-hidden position-relative">
                 {isOwner && (
-                    <button 
-                        type="button" 
+                    <button
+                        type="button"
                         className="btn-close position-absolute bg-light rounded-circle p-2 shadow-sm"
                         style={{ top: '10px', right: '10px', zIndex: 10 }}
                         onClick={handleShow}
@@ -166,9 +148,9 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated }: PostCardProps) => {
                     ></button>
                 )}
                 {post.imgUrl && (
-                    <Card.Img 
-                        variant="top" 
-                        src={post.imgUrl} 
+                    <Card.Img
+                        variant="top"
+                        src={post.imgUrl}
                         alt={post.title}
                         style={{ height: '260px', objectFit: 'cover' }}
                     />
@@ -178,20 +160,20 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated }: PostCardProps) => {
                     <div className="d-flex align-items-center mb-2">
                         {typeof post.owner === 'object' && post.owner !== null && (
                             post.owner.imgUrl ? (
-                                <img 
-                                    src={getImageUrl(post.owner.imgUrl)} 
-                                    alt={post.owner.username} 
-                                    className="rounded-circle me-2 object-fit-cover shadow-sm bg-white" 
-                                    style={{ width: '28px', height: '28px' }} 
+                                <img
+                                    src={getImageUrl(post.owner.imgUrl)}
+                                    alt={post.owner.username}
+                                    className="rounded-circle me-2 object-fit-cover shadow-sm bg-white"
+                                    style={{ width: '28px', height: '28px' }}
                                 />
                             ) : (
-                                <div 
+                                <div
                                     className="rounded-circle me-2 d-flex align-items-center justify-content-center fw-bold text-white shadow-sm"
-                                    style={{ 
-                                        width: '28px', 
-                                        height: '28px', 
+                                    style={{
+                                        width: '28px',
+                                        height: '28px',
                                         fontSize: '12px',
-                                        background: 'linear-gradient(135deg, #6366f1, #ec4899)' 
+                                        background: 'linear-gradient(135deg, #6366f1, #ec4899)'
                                     }}
                                 >
                                     {getInitials(post.owner.username)}
@@ -205,13 +187,13 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated }: PostCardProps) => {
                     <Card.Text className="text-body-secondary">
                         {post.content}
                     </Card.Text>
-                    
+
                     {post.tags && post.tags.length > 0 && (
                         <div className="mt-3">
                             {post.tags.map((tag, index) => (
-                                <Badge 
-                                    key={index} 
-                                    bg="primary" 
+                                <Badge
+                                    key={index}
+                                    bg="primary"
                                     className="me-1 bg-opacity-10 text-primary fw-medium rounded-pill"
                                 >
                                     {tag}
@@ -222,20 +204,20 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated }: PostCardProps) => {
                 </Card.Body>
                 <Card.Footer className="bg-white border-top d-flex justify-content-between align-items-center px-4 py-3">
                     <div className="d-flex gap-3 text-secondary small fw-medium">
-                        <span 
-                            onClick={handleLikeClick} 
+                        <span
+                            onClick={handleLikeClick}
                             style={{ cursor: 'pointer', userSelect: 'none' }}
                             title={isLiked ? "Unlike" : "Like"}
                         >
                             {isLiked ? '❤️' : '🤍'} {likesCount}
                         </span>
-                        <span 
-                            onClick={() => setShowComments(!showComments)}
-                            style={{ cursor: 'pointer', userSelect: 'none' }}
-                            title={showComments ? "Hide Comments" : "Show Comments"}
+                        <Link
+                            to={`/posts/${post._id}/comments`}
+                            style={{ cursor: 'pointer', userSelect: 'none', textDecoration: 'none', color: 'inherit' }}
+                            title="View Comments"
                         >
-                            💬 {localComments.length}
-                        </span>
+                            💬 {post.comments?.length || 0}
+                        </Link>
                     </div>
                     {isOwner && (
                         <div className="d-flex gap-2">
@@ -245,55 +227,8 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated }: PostCardProps) => {
                         </div>
                     )}
                 </Card.Footer>
-                
-                <Collapse in={showComments}>
-                    <div className="bg-light px-4 py-3 border-top">
-                        <h6 className="mb-3 fw-bold">Comments</h6>
-                        {localComments.length > 0 ? (
-                            <ul className="list-unstyled mb-3">
-                                {localComments.map((comment, idx) => (
-                                    <li key={idx} className="mb-2 pb-2 border-bottom border-light-subtle">
-                                        <div className="fw-semibold small">
-                                            {typeof comment.userId === 'object' && comment.userId !== null 
-                                                ? (comment.userId as any).username 
-                                                : (comment.userId as string)}
-                                        </div>
-                                        <div className="text-secondary small">{comment.content}</div>
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <p className="text-muted small mb-3">No comments yet.</p>
-                        )}
-                        
-                        <div className="d-flex gap-2">
-                            <Form.Control 
-                                size="sm" 
-                                type="text" 
-                                placeholder="Add a comment..." 
-                                value={newComment}
-                                onChange={(e) => setNewComment(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') handleAddComment();
-                                }}
-                                disabled={isSubmittingComment}
-                            />
-                            <Button 
-                                variant="primary" 
-                                size="sm" 
-                                className="px-3"
-                                onClick={handleAddComment}
-                                disabled={!newComment.trim() || isSubmittingComment}
-                            >
-                                {isSubmittingComment ? (
-                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                                ) : (
-                                    'Post'
-                                )}
-                            </Button>
-                        </div>
-                    </div>
-                </Collapse>
+
+
             </Card>
 
             {/* Delete Confirmation Modal */}
