@@ -76,7 +76,7 @@ export default function RegisterPage() {
 
     return (
         <div className="min-vh-100 d-flex align-items-center justify-content-center px-3 py-5">
-            <div className="glass-card rounded-4 p-4 p-sm-5" style={{ width: '100%', maxWidth: '440px' }}>
+            <div className="glass-card rounded-4 p-4 p-sm-5" style={{ width: '100%', maxWidth: '520px' }}>
                 {/* Brand */}
                 <div className="d-flex align-items-center justify-content-center gap-2 mb-4">
                     <span className="fs-3">✨</span>

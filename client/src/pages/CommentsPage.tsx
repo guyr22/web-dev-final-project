@@ -201,7 +201,6 @@ const CommentsPage = () => {
                                 }}
                                 disabled={isSubmittingComment}
                                 className="bg-white bg-opacity-5 border-white border-opacity-10 text-white shadow-none py-2 px-3 focus-primary"
-                                style={{ borderRadius: '12px' }}
                             />
                             <Button
                                 className="btn-premium px-4"

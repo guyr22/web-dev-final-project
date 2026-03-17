@@ -367,7 +367,7 @@ export default function ProfilePage() {
                             id="profile-username"
                             type="text"
                             placeholder="Your username"
-                            className={`form-control bg-white bg-opacity-5 border-white border-opacity-10 text-white rounded-4 px-4 py-3 shadow-none focus-primary${errors.username ? ' is-invalid' : ''}`}
+                            className={`form-control px-4 py-3 shadow-none focus-primary${errors.username ? ' is-invalid' : ''}`}
                             {...register('username')}
                         />
                         {errors.username && <div className="invalid-feedback ms-2">{errors.username.message}</div>}
@@ -381,7 +381,7 @@ export default function ProfilePage() {
                             id="profile-bio"
                             rows={4}
                             placeholder="Tell the world something about yourself…"
-                            className={`form-control bg-white bg-opacity-5 border-white border-opacity-10 text-white rounded-4 px-4 py-3 shadow-none focus-primary${errors.bio ? ' is-invalid' : ''}`}
+                            className={`form-control px-4 py-3 shadow-none focus-primary${errors.bio ? ' is-invalid' : ''}`}
                             {...register('bio')}
                         />
                         {errors.bio && <div className="invalid-feedback ms-2">{errors.bio.message}</div>}

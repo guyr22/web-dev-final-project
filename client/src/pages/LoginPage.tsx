@@ -86,7 +86,6 @@ export default function LoginPage() {
                             type="email"
                             placeholder="name@example.com"
                             className={`form-control${errors.email ? ' is-invalid' : ''}`}
-                            style={{ background: 'rgba(255,255,255,0.05)', color: 'white' }}
                             {...register('email')}
                         />
                         {errors.email && (
@@ -102,7 +101,6 @@ export default function LoginPage() {
                             type="password"
                             placeholder="••••••••"
                             className={`form-control${errors.password ? ' is-invalid' : ''}`}
-                            style={{ background: 'rgba(255,255,255,0.05)', color: 'white' }}
                             {...register('password')}
                         />
                         {errors.password && (
