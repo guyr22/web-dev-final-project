@@ -51,80 +51,92 @@ const FeedPage = () => {
     }
 
     return (
-        <Container className="py-4" style={{ maxWidth: '600px' }}>
-            <div className="d-flex justify-content-between align-items-center mb-4">
-                <h2 className="fw-bold mb-0">Your Feed</h2>
-                <Button variant="dark" onClick={handleShow} className="fw-semibold rounded-3 shadow-sm">
-                    + Create Post
+        <Container className="py-5" style={{ maxWidth: '640px' }}>
+            <div className="d-flex justify-content-between align-items-center mb-5">
+                <div>
+                    <h2 className="fw-bold mb-1 text-white">Your Feed</h2>
+                    <p className="text-muted small mb-0">Discover what's happening now</p>
+                </div>
+                <Button onClick={handleShow} className="btn-premium d-flex align-items-center gap-2">
+                    <span style={{ fontSize: '1.2rem' }}>+</span>
+                    <span>Create Post</span>
                 </Button>
             </div>
 
-            <Form onSubmit={handleSearch} className="mb-4">
-                <InputGroup>
+            <Form onSubmit={handleSearch} className="mb-5">
+                <InputGroup className="glass-card rounded-pill p-1">
                     <Form.Control
                         type="text"
-                        placeholder="Smart Search"
+                        placeholder="Search for moments..."
                         value={searchInput}
                         onChange={(e) => setSearchInput(e.target.value)}
-                        className="shadow-sm rounded-start-3"
+                        className="bg-transparent border-0 text-white px-4 py-2 shadow-none"
                         maxLength={500}
-                        isInvalid={searchInput.length >= 500}
                     />
-                    <Button variant="primary" type="submit" className="shadow-sm px-4 fw-semibold" style={{ zIndex: 0 }}>
+                    <Button variant="link" type="submit" className="text-primary fw-bold text-decoration-none px-4">
                         Search
                     </Button>
                 </InputGroup>
                 {searchInput.length > 0 && (
-                    <Form.Text className={`text-end d-block mt-1 ${searchInput.length >= 500 ? 'text-danger' : 'text-muted'}`}>
-                        {searchInput.length}/500 characters
-                    </Form.Text>
+                    <div className="px-3 mt-2">
+                         <span className={`small ${searchInput.length >= 500 ? 'text-danger' : 'text-muted opacity-50'}`} style={{ fontSize: '0.7rem' }}>
+                            {searchInput.length}/500 characters
+                        </span>
+                    </div>
                 )}
             </Form>
 
             {isSearching && (
-                <div className="d-flex justify-content-between align-items-center mb-4 p-3 bg-light rounded-3 border">
-                    <span className="fw-medium text-primary">
-                        Showing results for: "{searchQuery}"
+                <div className="d-flex justify-content-between align-items-center mb-5 p-3 glass-card rounded-3 border-0">
+                    <span className="small text-muted">
+                        Showing results for <span className="text-white fw-bold">"{searchQuery}"</span>
                     </span>
-                    <Button variant="outline-secondary" size="sm" onClick={handleClearSearch} className="fw-semibold">
-                        Clear Search
+                    <Button variant="link" size="sm" onClick={handleClearSearch} className="text-primary text-decoration-none fw-bold small p-0">
+                        Clear
                     </Button>
                 </div>
             )}
 
-            <Modal show={showCreateModal} onHide={handleClose} size="lg" centered>
-                <Modal.Header closeButton className="border-bottom-0 pb-0">
+            <Modal show={showCreateModal} onHide={handleClose} size="lg" centered contentClassName="glass-card border-0">
+                <Modal.Header closeButton closeVariant="white" className="border-0 pb-0 pt-4 px-4">
+                     <Modal.Title className="fw-bold text-white fs-4">Create New Post</Modal.Title>
                 </Modal.Header>
-                <Modal.Body className="pt-0">
+                <Modal.Body className="px-4 pb-4 pt-3">
                      <CreatePost onPostCreated={onPostCreated} />
                 </Modal.Body>
             </Modal>
 
             {posts.length === 0 ? (
-                <div className="text-center py-5 text-muted">
-                    <p className="fs-5">No posts yet. Be the first to share something!</p>
+                <div className="text-center py-5 glass-card rounded-4 border-0">
+                    <div className="fs-1 mb-3">🎐</div>
+                    <h5 className="text-white fw-bold">No posts found</h5>
+                    <p className="text-muted small">Be the first to share a moment with the community!</p>
+                    <Button onClick={handleShow} className="btn-premium mt-3">
+                        Share Something
+                    </Button>
                 </div>
             ) : (
-                <div className="d-flex flex-column gap-4">
+                <div className="d-flex flex-column gap-5">
                     {posts.map((post) => (
                         <PostCard key={post._id} post={post} onPostDeleted={refreshPosts} onPostUpdated={refreshPosts} />
                     ))}
 
                     {hasMore && !isSearching && (
-                        <div className="text-center py-3">
+                        <div className="text-center py-4">
                             <Button
                                 variant="outline-primary"
                                 onClick={loadMore}
                                 disabled={loadingMore}
-                                className="fw-semibold px-5 rounded-3"
+                                className="fw-bold px-5 rounded-pill border-2 transition-all"
+                                style={{ background: loadingMore ? 'transparent' : 'rgba(99, 102, 241, 0.05)' }}
                             >
                                 {loadingMore ? (
                                     <>
                                         <Spinner animation="border" size="sm" className="me-2" />
-                                        Loading...
+                                        <span>Syncing...</span>
                                     </>
                                 ) : (
-                                    'Load More'
+                                    'Load More Moments'
                                 )}
                             </Button>
                         </div>

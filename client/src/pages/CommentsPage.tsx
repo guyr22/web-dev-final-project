@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Container, Spinner, Alert, Card, Button, Form } from 'react-bootstrap';
+import { Container, Spinner, Alert, Button, Form } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 import postService from '../services/post.service';
 import { IPost } from '../types';
@@ -83,112 +83,145 @@ const CommentsPage = () => {
     }
 
     return (
-        <Container className="py-4" style={{ maxWidth: '600px' }}>
-            <Button variant="outline-secondary" className="mb-4 fw-semibold rounded-3 shadow-sm" onClick={() => navigate('/feed')}>
-                &larr; Back to Feed
+        <Container className="py-5" style={{ maxWidth: '640px' }}>
+            <Button 
+                variant="link" 
+                className="mb-4 text-primary fw-bold text-decoration-none d-flex align-items-center gap-2 p-0" 
+                onClick={() => navigate('/feed')}
+            >
+                <span style={{ fontSize: '1.2rem' }}>&larr;</span>
+                <span>Back to Moments</span>
             </Button>
 
-            <Card className="border-0 shadow rounded-4 overflow-hidden mb-4">
+            <article className="glass-card rounded-4 border-0 overflow-hidden mb-5">
                 {post.imgUrl && (
-                    <Card.Img
-                        variant="top"
-                        src={post.imgUrl}
-                        alt={post.title}
-                        style={{ height: '260px', objectFit: 'cover' }}
-                    />
+                    <div className="position-relative overflow-hidden" style={{ maxHeight: '300px' }}>
+                        <img
+                            src={post.imgUrl}
+                            alt={post.title}
+                            className="w-100 object-fit-cover"
+                        />
+                         <div className="position-absolute bottom-0 start-0 w-100 p-4" style={{ background: 'linear-gradient(to top, rgba(15, 23, 42, 0.8), transparent)' }}>
+                             <h3 className="fw-bold fs-5 text-white mb-0">{post.title}</h3>
+                        </div>
+                    </div>
                 )}
-                <Card.Body className="px-4 py-3">
-                    <Card.Title className="fw-bold fs-5">{post.title}</Card.Title>
-                    <div className="d-flex align-items-center mb-2">
+                <div className="p-4">
+                    {!post.imgUrl && <h3 className="fw-bold fs-5 text-white mb-3 text-gradient">{post.title}</h3>}
+                    <div className="d-flex align-items-center mb-3">
                         {typeof post.owner === 'object' && post.owner !== null && (
                             post.owner.imgUrl ? (
                                 <img
                                     src={getImageUrl(post.owner.imgUrl)}
                                     alt={post.owner.username}
-                                    className="rounded-circle me-2 object-fit-cover shadow-sm bg-white"
-                                    style={{ width: '28px', height: '28px' }}
+                                    className="rounded-circle me-3 object-fit-cover border border-2 border-white border-opacity-10"
+                                    style={{ width: '32px', height: '32px' }}
                                 />
                             ) : (
                                 <div
-                                    className="rounded-circle me-2 d-flex align-items-center justify-content-center fw-bold text-white shadow-sm"
+                                    className="rounded-circle me-3 d-flex align-items-center justify-content-center fw-bold text-white shadow-sm"
                                     style={{
-                                        width: '28px',
-                                        height: '28px',
-                                        fontSize: '12px',
-                                        background: 'linear-gradient(135deg, #6366f1, #ec4899)'
+                                        width: '32px',
+                                        height: '32px',
+                                        fontSize: '10px',
+                                        background: 'linear-gradient(135deg, var(--primary), var(--secondary))'
                                     }}
                                 >
                                     {getInitials(post.owner.username)}
                                 </div>
                             )
                         )}
-                        <p className="text-secondary small fw-semibold mb-0">
+                        <p className="text-white fw-bold small mb-0 opacity-75">
                             {typeof post.owner === 'object' && post.owner !== null ? post.owner.username : post.owner}
                         </p>
                     </div>
-                    <Card.Text className="text-body-secondary mb-0">
+                    <p className="text-muted mb-0 small" style={{ lineHeight: '1.6' }}>
                         {post.content}
-                    </Card.Text>
-                </Card.Body>
-            </Card>
+                    </p>
+                </div>
+            </article>
 
-            <Card className="border-0 shadow rounded-4 overflow-hidden">
-                <Card.Header className="bg-white border-bottom px-4 py-3">
-                    <h5 className="mb-0 fw-bold">Comments</h5>
-                </Card.Header>
-                <Card.Body className="px-4 py-3 bg-light">
+            <section className="glass-card rounded-4 border-0 overflow-hidden">
+                <div className="px-4 py-3 border-bottom border-white border-opacity-10">
+                    <h5 className="mb-0 fw-bold text-white">Conversation</h5>
+                </div>
+                <div className="p-4" style={{ minHeight: '120px' }}>
                     {post.comments && post.comments.length > 0 ? (
-                        <ul className="list-unstyled mb-0">
+                        <div className="d-flex flex-column gap-4">
                             {post.comments.map((comment, idx) => (
-                                <li key={idx} className="mb-3 pb-3 border-bottom border-light-subtle">
-                                    <div className="d-flex justify-content-between align-items-start mb-1">
-                                        <div className="fw-semibold small text-primary">
-                                            {typeof comment.userId === 'object' && comment.userId !== null
-                                                ? (comment.userId as any).username
-                                                : (comment.userId as string)}
-                                        </div>
-                                        {comment.createdAt && (
-                                            <small className="text-muted" style={{ fontSize: '0.75rem' }}>
-                                                {new Date(comment.createdAt).toLocaleDateString()}
-                                            </small>
-                                        )}
+                                <div key={idx} className="d-flex gap-3">
+                                    <div 
+                                        className="rounded-circle d-flex align-items-center justify-content-center fw-bold text-white shrink-0"
+                                        style={{ 
+                                            width: '32px', 
+                                            height: '32px', 
+                                            fontSize: '10px',
+                                            background: 'rgba(255,255,255,0.05)',
+                                            border: '1px solid rgba(255,255,255,0.1)'
+                                        }}
+                                    >
+                                        {getInitials(typeof comment.userId === 'object' && comment.userId !== null ? (comment.userId as any).username : '')}
                                     </div>
-                                    <div className="text-secondary small">{comment.content}</div>
-                                </li>
+                                    <div className="flex-grow-1">
+                                        <div className="d-flex justify-content-between align-items-center mb-1">
+                                            <span className="fw-bold text-primary small">
+                                                {typeof comment.userId === 'object' && comment.userId !== null
+                                                    ? (comment.userId as any).username
+                                                    : (comment.userId as string)}
+                                            </span>
+                                            {comment.createdAt && (
+                                                <span className="text-muted fw-medium" style={{ fontSize: '0.65rem' }}>
+                                                    {new Date(comment.createdAt).toLocaleDateString()}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div className="text-muted small" style={{ lineHeight: '1.5' }}>{comment.content}</div>
+                                    </div>
+                                </div>
                             ))}
-                        </ul>
+                        </div>
                     ) : (
-                        <p className="text-muted small mb-0 text-center py-3">No comments yet. Be the first to start the conversation!</p>
+                        <div className="text-center py-4">
+                            <span className="d-block fs-2 mb-2">💬</span>
+                            <p className="text-muted small mb-0">No one has started the mystery yet. Speak up!</p>
+                        </div>
                     )}
-                </Card.Body>
-                <Card.Footer className="bg-white border-top px-4 py-3">
-                    <div className="d-flex gap-2">
-                        <Form.Control
-                            type="text"
-                            placeholder="Add a comment..."
-                            value={newComment}
-                            onChange={(e) => setNewComment(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') handleAddComment();
-                            }}
-                            disabled={isSubmittingComment}
-                            className="shadow-sm border-light-subtle"
-                        />
-                        <Button
-                            variant="primary"
-                            className="px-4 shadow-sm fw-semibold"
-                            onClick={handleAddComment}
-                            disabled={!newComment.trim() || isSubmittingComment}
-                        >
-                            {isSubmittingComment ? (
-                                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                            ) : (
-                                'Post'
-                            )}
-                        </Button>
+                </div>
+                <div className="p-4 bg-dark bg-opacity-25 border-top border-white border-opacity-10">
+                    <div className="d-flex flex-column gap-2">
+                        <div className="d-flex gap-3">
+                            <Form.Control
+                                type="text"
+                                placeholder="Share your thoughts..."
+                                maxLength={300}
+                                value={newComment}
+                                onChange={(e) => setNewComment(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') handleAddComment();
+                                }}
+                                disabled={isSubmittingComment}
+                                className="bg-white bg-opacity-5 border-white border-opacity-10 text-white shadow-none py-2 px-3 focus-primary"
+                            />
+                            <Button
+                                className="btn-premium px-4"
+                                onClick={handleAddComment}
+                                disabled={!newComment.trim() || isSubmittingComment}
+                            >
+                                {isSubmittingComment ? (
+                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                ) : (
+                                    'Send'
+                                )}
+                            </Button>
+                        </div>
+                        <div className="d-flex justify-content-end px-2">
+                            <span className={`small ${newComment.length >= 280 ? 'text-accent' : 'text-muted opacity-50'}`} style={{ fontSize: '0.7rem' }}>
+                                {newComment.length}/300
+                            </span>
+                        </div>
                     </div>
-                </Card.Footer>
-            </Card>
+                </div>
+            </section>
         </Container>
     );
 };

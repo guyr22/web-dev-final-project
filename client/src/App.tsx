@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 
-import { Navbar, Container, Nav } from 'react-bootstrap';
+import { Navbar, Container, Nav, Button } from 'react-bootstrap';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import FeedPage from './pages/FeedPage';
 import LoginPage from './pages/LoginPage';
@@ -29,15 +29,26 @@ function AppShell() {
   return (
     <>
       {!hideNav && (
-        <Navbar bg="dark" data-bs-theme="dark" className="shadow-sm sticky-top">
+        <Navbar expand="lg" className="glass-nav sticky-top py-3">
           <Container>
-            <Navbar.Brand href="/feed" className="fw-bold fs-4">ShlakshukGram</Navbar.Brand>
-            {isAuthenticated && (
-              <Nav className="ms-auto align-items-center">
-                <Nav.Link href="/profile" className="text-white-50 me-2">Profile</Nav.Link>
-                <Nav.Link onClick={logout} className="text-white-50">Sign out</Nav.Link>
-              </Nav>
-            )}
+            <Navbar.Brand href="/feed" className="fw-bold fs-3 text-white d-flex align-items-center gap-2">
+              <span style={{ fontSize: '1.5rem' }}>✨</span>
+              <span className="text-gradient">ShlakshukGram</span>
+            </Navbar.Brand>
+            <Navbar.Toggle aria-controls="basic-navbar-nav" className="border-0 shadow-none">
+               <span className="navbar-toggler-icon" style={{ filter: 'invert(1)' }}></span>
+            </Navbar.Toggle>
+            <Navbar.Collapse id="basic-navbar-nav">
+              {isAuthenticated && (
+                <Nav className="ms-auto align-items-center gap-3 mt-3 mt-lg-0">
+                  <Nav.Link href="/feed" className="text-muted hover-white fw-medium">Home</Nav.Link>
+                  <Nav.Link href="/profile" className="text-muted hover-white fw-medium">Profile</Nav.Link>
+                  <Button variant="link" onClick={logout} className="text-muted hover-white fw-medium text-decoration-none p-0">
+                    Sign out
+                  </Button>
+                </Nav>
+              )}
+            </Navbar.Collapse>
           </Container>
         </Navbar>
       )}
