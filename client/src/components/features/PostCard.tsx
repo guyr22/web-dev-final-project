@@ -355,7 +355,7 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated }: PostCardProps) => {
                                         value={editContent}
                                         onChange={(e) => setEditContent(e.target.value)}
                                         placeholder="Share the story behind this moment..."
-                                        className="bg-transparent border-0 text-white opacity-75 rounded-0 px-0 fs-5 shadow-none focus-primary"
+                                        className="bg-transparent border-0 text-white rounded-0 px-0 fs-5 shadow-none focus-primary"
                                         style={{ resize: 'none' }}
                                     />
                                 </Form.Group>

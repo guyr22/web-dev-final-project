@@ -188,30 +188,38 @@ const CommentsPage = () => {
                     )}
                 </div>
                 <div className="p-4 bg-dark bg-opacity-25 border-top border-white border-opacity-10">
-                    <div className="d-flex gap-3">
-                        <Form.Control
-                            type="text"
-                            placeholder="Share your thoughts..."
-                            value={newComment}
-                            onChange={(e) => setNewComment(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') handleAddComment();
-                            }}
-                            disabled={isSubmittingComment}
-                            className="bg-white bg-opacity-5 border-white border-opacity-10 text-white shadow-none py-2 px-3 focus-primary"
-                            style={{ borderRadius: '12px' }}
-                        />
-                        <Button
-                            className="btn-premium px-4"
-                            onClick={handleAddComment}
-                            disabled={!newComment.trim() || isSubmittingComment}
-                        >
-                            {isSubmittingComment ? (
-                                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                            ) : (
-                                'Send'
-                            )}
-                        </Button>
+                    <div className="d-flex flex-column gap-2">
+                        <div className="d-flex gap-3">
+                            <Form.Control
+                                type="text"
+                                placeholder="Share your thoughts..."
+                                maxLength={300}
+                                value={newComment}
+                                onChange={(e) => setNewComment(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') handleAddComment();
+                                }}
+                                disabled={isSubmittingComment}
+                                className="bg-white bg-opacity-5 border-white border-opacity-10 text-white shadow-none py-2 px-3 focus-primary"
+                                style={{ borderRadius: '12px' }}
+                            />
+                            <Button
+                                className="btn-premium px-4"
+                                onClick={handleAddComment}
+                                disabled={!newComment.trim() || isSubmittingComment}
+                            >
+                                {isSubmittingComment ? (
+                                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                                ) : (
+                                    'Send'
+                                )}
+                            </Button>
+                        </div>
+                        <div className="d-flex justify-content-end px-2">
+                            <span className={`small ${newComment.length >= 280 ? 'text-accent' : 'text-muted opacity-50'}`} style={{ fontSize: '0.7rem' }}>
+                                {newComment.length}/300
+                            </span>
+                        </div>
                     </div>
                 </div>
             </section>
