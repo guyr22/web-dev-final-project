@@ -113,6 +113,14 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
   font-weight: 500; /* Slightly heavier for small text to improve legibility */
 }
 
+.opacity-05 {
+  opacity: 0.05 !important;
+}
+
+.opacity-02 {
+  opacity: 0.02 !important;
+}
+
 /* Form Overrides */
 .form-control {
   background: rgba(255, 255, 255, 0.05) !important;

@@ -290,8 +290,8 @@ export default function ProfilePage() {
         <Container className="py-5" style={{ maxWidth: '640px' }}>
             <div className="glass-card rounded-5 border-0 p-5 mt-4 overflow-hidden position-relative">
                 {/* Decoration */}
-                <div className="position-absolute top-0 end-0 p-4 opacity-10">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 0 0 0-2 2v14a2 0 0 0 2 2h14a2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                <div className="position-absolute top-0 end-0 p-3 opacity-05">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 0 0 0-2 2v14a2 0 0 0 2 2h14a2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                 </div>
 
                 <div className="d-flex align-items-center gap-4 mb-5">
