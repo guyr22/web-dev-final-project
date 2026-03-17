@@ -82,7 +82,9 @@ export class MockAIService implements IAIService {
             return [];
         }
 
-        // Return a dummy 384-dimensional vector
-        return Array.from({ length: 384 }, () => Math.random() * 2 - 1);
+        // For testing purposes, we return a deterministic vector.
+        // If we want different vectors for different text, we could hash it.
+        // For now, returning a fixed vector ensures a similarity of 1.0 in tests.
+        return new Array(384).fill(0.1);
     }
 }
