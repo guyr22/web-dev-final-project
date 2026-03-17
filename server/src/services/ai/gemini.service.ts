@@ -75,4 +75,24 @@ export class GeminiAIService implements IAIService {
             return [];
         }
     }
+
+    async generateEmbedding(text: string): Promise<number[]> {
+        try {
+            this.init();
+            
+            if (!process.env.GEMINI_API_KEY) {
+                console.warn("GEMINI_API_KEY is missing, returning empty embedding");
+                return [];
+            }
+            
+            const embeddingModel = this.genAI!.getGenerativeModel({ model: "gemini-embedding-001"});
+            
+            const result = await embeddingModel.embedContent(text);
+            const embedding = result.embedding;
+            return embedding.values;
+        } catch (error) {
+            console.error("Gemini AI Service Error (generateEmbedding):", error);
+            return [];
+        }
+    }
 }

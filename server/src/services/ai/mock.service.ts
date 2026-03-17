@@ -71,4 +71,18 @@ export class MockAIService implements IAIService {
 
         return ["#mock", "#test", "#AI"]; // Match old fallback
     }
+
+    async generateEmbedding(text: string): Promise<number[]> {
+        await this.simulateDelay();
+
+        try {
+            this.checkScenario('generateEmbedding');
+        } catch (err: any) {
+            console.error("Mock AI Service Error:", err.message);
+            return [];
+        }
+
+        // Return a dummy 384-dimensional vector
+        return Array.from({ length: 384 }, () => Math.random() * 2 - 1);
+    }
 }

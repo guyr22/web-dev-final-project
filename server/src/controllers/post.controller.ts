@@ -5,6 +5,7 @@ import PostModel from '../models/post.model';
 import AIService from '../services/ai.service';
 import fs from 'fs';
 import path from 'path';
+import { cosineSimilarity } from '../utils/math';
 
 class PostController extends BaseController<IPost> {
     constructor() {
@@ -40,20 +41,25 @@ class PostController extends BaseController<IPost> {
                 return res.status(400).json({ message: 'Search query "q" is required' });
             }
 
-            const keywords = await AIService.parseSearchQuery(freeText);
-            const searchRegex = new RegExp(freeText, 'i');
+            const queryEmbedding = await AIService.generateEmbedding(freeText);
             
-            const items = await this.model.find({
-                $or: [
-                    { title: { $regex: searchRegex } },
-                    { content: { $regex: searchRegex } },
-                    { tags: { $in: keywords } }
-                ]
-            })
+            if (!queryEmbedding || queryEmbedding.length === 0) {
+                 return res.status(500).json({ message: 'Failed to generate search embedding' });
+            }
+
+            const allPosts = await this.model.find({ embedding: { $exists: true, $ne: [] } })
                 .populate('owner', 'username imgUrl')
                 .populate('comments.userId', 'username imgUrl');
 
-            res.status(200).json(items);
+            const postsWithScores = allPosts.map(post => {
+                const score = cosineSimilarity(queryEmbedding, post.embedding || []);
+                return { post, score };
+            });
+
+            postsWithScores.sort((a, b) => b.score - a.score);
+            const topResults = postsWithScores.slice(0, 5).map(item => item.post);
+
+            res.status(200).json(topResults);
         } catch (error) {
             res.status(500).json({ message: (error as Error).message });
         }
@@ -100,17 +106,22 @@ class PostController extends BaseController<IPost> {
             }
 
             const content = req.body.content;
+            const title = req.body.title;
             let tags: string[] = [];
+            let embedding: number[] = [];
 
-            // Generate tags using AI Service
-            if (content) {
-                tags = await AIService.generateTags(content);
+            // Generate tags and embedding using AI Service
+            const textToAnalyze = `${title || ''} ${content || ''}`.trim();
+            if (textToAnalyze) {
+                tags = await AIService.generateTags(textToAnalyze);
+                embedding = await AIService.generateEmbedding(textToAnalyze);
             }
 
             const postData: Partial<IPost> = {
                 ...req.body,
                 owner: userId,
-                tags: tags
+                tags: tags,
+                embedding: embedding
             };
 
             // Handle image upload if present
@@ -150,6 +161,12 @@ class PostController extends BaseController<IPost> {
             }
 
             const updateData: Partial<IPost> = { ...req.body };
+
+            if (req.body.content || req.body.title) {
+                const textToAnalyze = `${req.body.title || post.title || ''} ${req.body.content || post.content || ''}`.trim();
+                updateData.tags = await AIService.generateTags(textToAnalyze);
+                updateData.embedding = await AIService.generateEmbedding(textToAnalyze);
+            }
 
             // Handle new image upload
             if (req.file) {

@@ -27,6 +27,10 @@ const postSchema = new Schema<IPost>({
         type: [String],
         default: []
     },
+    embedding: {
+        type: [Number],
+        default: []
+    },
     comments: [{
         userId: {
             type: Schema.Types.ObjectId,
