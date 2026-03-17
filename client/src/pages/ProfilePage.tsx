@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Container, Spinner, Alert } from 'react-bootstrap';
+import { Alert, Spinner, Container } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -147,11 +147,6 @@ export default function ProfilePage() {
         }
     };
 
-    const handleCancelEdit = () => {
-        setEditing(false);
-        setServerError(null);
-    };
-
     // -----------------------------------------------------------------------
     // Render states
     // -----------------------------------------------------------------------
@@ -185,55 +180,67 @@ export default function ProfilePage() {
     // -----------------------------------------------------------------------
     if (!editing) {
         return (
-            <Container className="py-5" style={{ maxWidth: '520px' }}>
-                <div className="card border-0 shadow rounded-4 overflow-hidden">
+            <Container className="py-5" style={{ maxWidth: '560px' }}>
+                <div className="glass-card rounded-5 overflow-hidden border-0 shadow-lg">
                     {/* Header banner */}
                     <div
+                        className="w-100"
                         style={{
-                            height: 80,
-                            background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%)',
+                            height: 120,
+                            background: 'linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%)',
+                            opacity: 0.8
                         }}
                     />
 
                     {/* Avatar */}
-                    <div className="d-flex justify-content-center" style={{ marginTop: -40 }}>
-                        {avatarUrl ? (
-                            <img
-                                src={avatarUrl}
-                                alt="avatar"
-                                className="rounded-circle border border-4 border-white shadow"
-                                style={{ width: 80, height: 80, objectFit: 'cover', background: '#f3f4f6' }}
-                            />
-                        ) : (
-                            <div
-                                className="rounded-circle border border-4 border-white shadow d-flex align-items-center justify-content-center fw-bold fs-4 text-white"
-                                style={{
-                                    width: 80,
-                                    height: 80,
-                                    background: 'linear-gradient(135deg, #6366f1, #ec4899)',
-                                }}
-                            >
-                                {getInitials(profile.username)}
-                            </div>
-                        )}
+                    <div className="d-flex justify-content-center" style={{ marginTop: -60 }}>
+                        <div className="position-relative">
+                             {avatarUrl ? (
+                                <img
+                                    src={avatarUrl}
+                                    alt="avatar"
+                                    className="rounded-circle border border-4 border-slate-900 shadow-lg"
+                                    style={{ width: 120, height: 120, objectFit: 'cover', background: '#1e293b' }}
+                                />
+                            ) : (
+                                <div
+                                    className="rounded-circle border border-4 border-slate-900 shadow-lg d-flex align-items-center justify-content-center fw-bold fs-1 text-white"
+                                    style={{
+                                        width: 120,
+                                        height: 120,
+                                        background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
+                                    }}
+                                >
+                                    {getInitials(profile.username)}
+                                </div>
+                            )}
+                            <div className="position-absolute bottom-0 end-0 bg-primary rounded-circle border border-3 border-slate-900 p-2" style={{ width: 20, height: 20 }}></div>
+                        </div>
                     </div>
 
                     {/* Info */}
-                    <div className="card-body text-center pt-2 pb-3 px-3">
-                        <h2 className="fw-bold fs-5 mb-1">{profile.username}</h2>
-                        <p className="text-muted small mb-2">{profile.email}</p>
+                    <div className="card-body text-center pt-3 pb-5 px-4">
+                        <h2 className="fw-bold fs-3 mb-1 text-gradient">{profile.username}</h2>
+                        <p className="text-muted small mb-4 fw-medium">{profile.email}</p>
+
+                        <div className="d-flex justify-content-center gap-4 mb-4">
+                            <div className="text-center">
+                                <span className="d-block fw-bold text-white fs-5">{userPosts.length}</span>
+                                <span className="small text-muted text-uppercase fw-bold" style={{ fontSize: '0.65rem', letterSpacing: '1px' }}>Moments</span>
+                            </div>
+                        </div>
 
                         {profile.bio ? (
-                            <p className="text-secondary small fst-italic mb-3" style={{ whiteSpace: 'pre-wrap' }}>
-                                "{profile.bio}"
+                            <p className="text-white opacity-75 small mb-4 px-3" style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>
+                                {profile.bio}
                             </p>
                         ) : (
-                            <p className="text-muted small mb-3">No bio yet.</p>
+                            <p className="text-muted small mb-4 italic">No bio written yet</p>
                         )}
 
                         <button
                             id="btn-edit-profile"
-                            className="btn btn-outline-primary btn-sm fw-semibold rounded-pill px-4"
+                            className="btn btn-premium btn-sm fw-bold px-5"
                             onClick={() => setEditing(true)}
                         >
                             Edit Profile
@@ -242,21 +249,25 @@ export default function ProfilePage() {
                 </div>
 
                 {/* User Posts Section */}
-                <div className="mt-5">
-                    <h3 className="fw-bold fs-4 mb-4" style={{ color: '#1f2937' }}>My Posts</h3>
+                <div className="mt-5 pt-4">
+                    <div className="d-flex align-items-center gap-3 mb-4">
+                        <h3 className="fw-bold fs-4 mb-0 text-white">Your Moments</h3>
+                        <div className="flex-grow-1 border-bottom border-white border-opacity-10"></div>
+                    </div>
+                    
                     {loadingPosts ? (
-                        <div className="d-flex justify-content-center py-4">
-                            <Spinner animation="border" variant="primary" />
+                        <div className="d-flex justify-content-center py-5">
+                            <Spinner animation="border" variant="primary" size="sm" />
                         </div>
                     ) : postsError ? (
-                        <Alert variant="danger">{postsError}</Alert>
+                        <Alert variant="danger" className="bg-danger bg-opacity-10 border-0 text-danger rounded-4">{postsError}</Alert>
                     ) : userPosts.length === 0 ? (
-                        <div className="text-center py-5 bg-white rounded-4 shadow-sm border-0">
-                            <h4 className="fw-semibold text-secondary mb-2">No posts yet</h4>
-                            <p className="text-muted mb-0">When you share something, it will appear here.</p>
+                        <div className="text-center py-5 glass-card rounded-4 border-0">
+                            <h5 className="fw-bold text-white mb-2">No moments yet</h5>
+                            <p className="text-muted small mb-0">Start sharing your world today!</p>
                         </div>
                     ) : (
-                        <div className="d-flex flex-column gap-4">
+                        <div className="d-flex flex-column gap-5">
                             {userPosts.map(post => (
                                 <PostCard
                                     key={post._id}
@@ -274,39 +285,67 @@ export default function ProfilePage() {
 
     // -----------------------------------------------------------------------
     // Edit mode
-    // -----------------------------------------------------------------------
+    // -----------------------------------------------------------------------    // Edit mode
     return (
-        <Container className="py-5" style={{ maxWidth: '520px' }}>
-            <div className="card border-0 shadow rounded-4 p-4 p-sm-5">
-                <h2 className="fw-bold fs-5 mb-4 text-center">Edit Profile</h2>
+        <Container className="py-5" style={{ maxWidth: '640px' }}>
+            <div className="glass-card rounded-5 border-0 p-5 mt-4 overflow-hidden position-relative">
+                {/* Decoration */}
+                <div className="position-absolute top-0 end-0 p-4 opacity-10">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 0 0 0-2 2v14a2 0 0 0 2 2h14a2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </div>
+
+                <div className="d-flex align-items-center gap-4 mb-5">
+                    <button 
+                        className="btn glass-card border-white border-opacity-10 rounded-circle p-2 text-white transition-all hover-scale"
+                        style={{ width: '42px', height: '42px' }}
+                        onClick={() => setEditing(false)}
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    </button>
+                    <div>
+                        <h2 className="fw-bold fs-2 mb-1 text-white text-gradient">Refine Identity</h2>
+                        <p className="text-muted small mb-0">Update your presence in the digital realm</p>
+                    </div>
+                </div>
 
                 {serverError && (
-                    <Alert variant="danger" dismissible onClose={() => setServerError(null)}>
+                    <Alert variant="danger" className="bg-danger bg-opacity-10 border-0 text-danger rounded-4 mb-4" dismissible onClose={() => setServerError(null)}>
                         {serverError}
                     </Alert>
                 )}
 
                 {/* Avatar preview */}
-                <div className="d-flex flex-column align-items-center mb-4">
-                    {avatarPreview ? (
-                        <img
-                            src={avatarPreview}
-                            alt="avatar preview"
-                            className="rounded-circle border shadow mb-2"
-                            style={{ width: 96, height: 96, objectFit: 'cover' }}
-                        />
-                    ) : (
-                        <div
-                            className="rounded-circle d-flex align-items-center justify-content-center fw-bold fs-3 text-white mb-2 shadow"
-                            style={{
-                                width: 96,
-                                height: 96,
-                                background: 'linear-gradient(135deg, #6366f1, #ec4899)',
-                            }}
+                <div className="d-flex flex-column align-items-center mb-5">
+                    <div className="position-relative mb-3">
+                        {avatarPreview ? (
+                            <img
+                                src={avatarPreview}
+                                alt="avatar preview"
+                                className="rounded-circle border border-4 border-slate-900 shadow-lg"
+                                style={{ width: 120, height: 120, objectFit: 'cover', background: '#1e293b' }}
+                            />
+                        ) : (
+                            <div
+                                className="rounded-circle border border-4 border-slate-900 shadow-lg d-flex align-items-center justify-content-center fw-bold fs-1 text-white"
+                                style={{
+                                    width: 120,
+                                    height: 120,
+                                    background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
+                                }}
+                            >
+                                {getInitials(profile.username)}
+                            </div>
+                        )}
+                        <button
+                            type="button"
+                            className="position-absolute bottom-0 end-0 bg-primary rounded-circle border border-3 border-slate-900 p-2 d-flex align-items-center justify-content-center shadow-sm transition-all hover-scale"
+                            style={{ width: 40, height: 40 }}
+                            onClick={() => fileInputRef.current?.click()}
                         >
-                            {getInitials(profile.username)}
-                        </div>
-                    )}
+                            <span style={{ fontSize: '1.2rem' }}>📸</span>
+                        </button>
+                    </div>
+                    
                     <input
                         id="avatar-file-input"
                         type="file"
@@ -315,68 +354,62 @@ export default function ProfilePage() {
                         ref={fileInputRef}
                         onChange={handleAvatarChange}
                     />
-                    <button
-                        type="button"
-                        className="btn btn-outline-secondary btn-sm rounded-pill px-3"
-                        onClick={() => fileInputRef.current?.click()}
-                    >
-                        Change Photo
-                    </button>
+                    <p className="text-muted small mb-0">Tap to upload a new vibe</p>
                 </div>
 
                 {/* Form fields */}
                 <form onSubmit={handleSubmit(onSubmit)} noValidate>
-                    <div className="mb-3">
-                        <label className="form-label fw-semibold small" htmlFor="profile-username">
-                            Username
+                    <div className="mb-4">
+                        <label className="form-label text-white opacity-50 small fw-bold text-uppercase mb-2 ms-2" style={{ letterSpacing: '1px' }} htmlFor="profile-username">
+                            Identity
                         </label>
                         <input
                             id="profile-username"
                             type="text"
                             placeholder="Your username"
-                            className={`form-control rounded-3${errors.username ? ' is-invalid' : ''}`}
+                            className={`form-control bg-white bg-opacity-5 border-white border-opacity-10 text-white rounded-4 px-4 py-3 shadow-none focus-primary${errors.username ? ' is-invalid' : ''}`}
                             {...register('username')}
                         />
-                        {errors.username && <div className="invalid-feedback">{errors.username.message}</div>}
+                        {errors.username && <div className="invalid-feedback ms-2">{errors.username.message}</div>}
                     </div>
 
-                    <div className="mb-4">
-                        <label className="form-label fw-semibold small" htmlFor="profile-bio">
-                            Bio
+                    <div className="mb-5">
+                        <label className="form-label text-white opacity-50 small fw-bold text-uppercase mb-2 ms-2" style={{ letterSpacing: '1px' }} htmlFor="profile-bio">
+                            About Me
                         </label>
                         <textarea
                             id="profile-bio"
                             rows={4}
                             placeholder="Tell the world something about yourself…"
-                            className={`form-control rounded-3${errors.bio ? ' is-invalid' : ''}`}
+                            className={`form-control bg-white bg-opacity-5 border-white border-opacity-10 text-white rounded-4 px-4 py-3 shadow-none focus-primary${errors.bio ? ' is-invalid' : ''}`}
                             {...register('bio')}
                         />
-                        {errors.bio && <div className="invalid-feedback">{errors.bio.message}</div>}
+                        {errors.bio && <div className="invalid-feedback ms-2">{errors.bio.message}</div>}
                     </div>
 
-                    <div className="d-flex gap-2">
-                        <button
-                            id="btn-save-profile"
-                            type="submit"
-                            className="btn btn-primary fw-semibold rounded-3 flex-grow-1"
-                            disabled={isSubmitting}
-                        >
-                            {isSubmitting ? (
-                                <>
-                                    <Spinner animation="border" size="sm" className="me-2" />
-                                    Saving…
-                                </>
-                            ) : (
-                                'Save Changes'
-                            )}
-                        </button>
+                    <div className="d-flex gap-3 mt-5">
                         <button
                             type="button"
-                            className="btn btn-outline-secondary fw-semibold rounded-3"
-                            onClick={handleCancelEdit}
+                            className="btn glass-card border-white border-opacity-10 text-white fw-bold py-3 px-4 rounded-4 flex-grow-1 transition-all hover-bg-light"
+                            onClick={() => setEditing(false)}
                             disabled={isSubmitting}
                         >
                             Cancel
+                        </button>
+                        <button
+                            id="btn-save-profile"
+                            type="submit"
+                            className="btn btn-premium py-3 px-5 rounded-4 flex-grow-1 shadow-lg"
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? (
+                                <div className="d-flex align-items-center justify-content-center gap-2">
+                                    <Spinner animation="border" size="sm" />
+                                    <span>Saving...</span>
+                                </div>
+                            ) : (
+                                'Save Presence'
+                            )}
                         </button>
                     </div>
                 </form>
