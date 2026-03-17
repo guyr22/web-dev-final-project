@@ -41,6 +41,11 @@ class PostController extends BaseController<IPost> {
                 return res.status(400).json({ message: 'Search query "q" is required' });
             }
 
+            // Prevent API abuse and excessive costs by limiting the search query length
+            if (freeText.length > 500) {
+                return res.status(400).json({ message: 'Search query is too long. Please limit your search to 500 characters.' });
+            }
+
             const queryEmbedding = await AIService.generateEmbedding(freeText);
             
             if (!queryEmbedding || queryEmbedding.length === 0) {
