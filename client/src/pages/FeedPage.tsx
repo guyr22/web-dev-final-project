@@ -67,11 +67,18 @@ const FeedPage = () => {
                         value={searchInput}
                         onChange={(e) => setSearchInput(e.target.value)}
                         className="shadow-sm rounded-start-3"
+                        maxLength={500}
+                        isInvalid={searchInput.length >= 500}
                     />
                     <Button variant="primary" type="submit" className="shadow-sm px-4 fw-semibold" style={{ zIndex: 0 }}>
                         Search
                     </Button>
                 </InputGroup>
+                {searchInput.length > 0 && (
+                    <Form.Text className={`text-end d-block mt-1 ${searchInput.length >= 500 ? 'text-danger' : 'text-muted'}`}>
+                        {searchInput.length}/500 characters
+                    </Form.Text>
+                )}
             </Form>
 
             {isSearching && (

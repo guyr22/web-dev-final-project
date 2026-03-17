@@ -41,6 +41,11 @@ class PostController extends BaseController<IPost> {
                 return res.status(400).json({ message: 'Search query "q" is required' });
             }
 
+            // Prevent API abuse and excessive costs by limiting the search query length
+            if (freeText.length > 500) {
+                return res.status(400).json({ message: 'Search query is too long. Please limit your search to 500 characters.' });
+            }
+
             const queryEmbedding = await AIService.generateEmbedding(freeText);
             
             if (!queryEmbedding || queryEmbedding.length === 0) {
@@ -56,8 +61,13 @@ class PostController extends BaseController<IPost> {
                 return { post, score };
             });
 
-            postsWithScores.sort((a, b) => b.score - a.score);
-            const topResults = postsWithScores.slice(0, 5).map(item => item.post);
+            // Filter out low-confidence results (threshold: 0.62 for short text)
+            // and sort descending by score
+            const relevantPosts = postsWithScores
+                .filter(item => item.score > 0.62)
+                .sort((a, b) => b.score - a.score);
+
+            const topResults = relevantPosts.slice(0, 5).map(item => item.post);
 
             res.status(200).json(topResults);
         } catch (error) {
