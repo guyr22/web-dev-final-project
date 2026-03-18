@@ -97,7 +97,7 @@ const CommentsPage = () => {
                 {post.imgUrl && (
                     <div className="position-relative overflow-hidden" style={{ maxHeight: '300px' }}>
                         <img
-                            src={post.imgUrl}
+                            src={getImageUrl(post.imgUrl)}
                             alt={post.title}
                             className="w-100 object-fit-cover"
                         />
