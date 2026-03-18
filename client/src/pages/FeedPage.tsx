@@ -67,7 +67,7 @@ const FeedPage = () => {
                 <InputGroup className="glass-card rounded-pill p-1">
                     <Form.Control
                         type="text"
-                        placeholder="Search for moments..."
+                        placeholder="Search for posts..."
                         value={searchInput}
                         onChange={(e) => setSearchInput(e.target.value)}
                         className="bg-transparent border-0 text-white px-4 py-2 shadow-none"
@@ -110,7 +110,7 @@ const FeedPage = () => {
                 <div className="text-center py-5 glass-card rounded-4 border-0">
                     <div className="fs-1 mb-3">🎐</div>
                     <h5 className="text-white fw-bold">No posts found</h5>
-                    <p className="text-muted small">Be the first to share a moment with the community!</p>
+                    <p className="text-muted small">Be the first to share a post with the community!</p>
                     <Button onClick={handleShow} className="btn-premium mt-3">
                         Share Something
                     </Button>
@@ -136,7 +136,7 @@ const FeedPage = () => {
                                         <span>Syncing...</span>
                                     </>
                                 ) : (
-                                    'Load More Moments'
+                                    'Load More Posts'
                                 )}
                             </Button>
                         </div>

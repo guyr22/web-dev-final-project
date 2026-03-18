@@ -226,7 +226,7 @@ export default function ProfilePage() {
                         <div className="d-flex justify-content-center gap-4 mb-4">
                             <div className="text-center">
                                 <span className="d-block fw-bold text-white fs-5">{userPosts.length}</span>
-                                <span className="small text-muted text-uppercase fw-bold" style={{ fontSize: '0.65rem', letterSpacing: '1px' }}>Moments</span>
+                                <span className="small text-muted text-uppercase fw-bold" style={{ fontSize: '0.65rem', letterSpacing: '1px' }}>Posts</span>
                             </div>
                         </div>
 
@@ -251,7 +251,7 @@ export default function ProfilePage() {
                 {/* User Posts Section */}
                 <div className="mt-5 pt-4">
                     <div className="d-flex align-items-center gap-3 mb-4">
-                        <h3 className="fw-bold fs-4 mb-0 text-white">Your Moments</h3>
+                        <h3 className="fw-bold fs-4 mb-0 text-white">Your Posts</h3>
                         <div className="flex-grow-1 border-bottom border-white border-opacity-10"></div>
                     </div>
                     
@@ -263,7 +263,7 @@ export default function ProfilePage() {
                         <Alert variant="danger" className="bg-danger bg-opacity-10 border-0 text-danger rounded-4">{postsError}</Alert>
                     ) : userPosts.length === 0 ? (
                         <div className="text-center py-5 glass-card rounded-4 border-0">
-                            <h5 className="fw-bold text-white mb-2">No moments yet</h5>
+                            <h5 className="fw-bold text-white mb-2">No Posts yet</h5>
                             <p className="text-muted small mb-0">Start sharing your world today!</p>
                         </div>
                     ) : (

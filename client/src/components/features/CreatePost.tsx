@@ -91,7 +91,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                     </div>
                     <div>
-                        <h4 className="fw-bold mb-0 text-white">Create Moment</h4>
+                        <h4 className="fw-bold mb-0 text-white">Create Post</h4>
                         <p className="text-muted small mb-0">Share something special with the community</p>
                     </div>
                 </div>
@@ -112,7 +112,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
 
                 <form onSubmit={handleSubmit(onSubmit)} noValidate>
                     <div className="mb-4">
-                        <label htmlFor="title" className="form-label">Moment Title</label>
+                        <label htmlFor="title" className="form-label">Post Title</label>
                         <input
                             type="text"
                             className={`form-control ${errors.title ? 'is-invalid' : ''}`}
@@ -129,7 +129,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
                             className={`form-control ${errors.content ? 'is-invalid' : ''}`}
                             id="content"
                             rows={4}
-                            placeholder="Tell the story behind this moment..."
+                            placeholder="Tell the story behind this post..."
                             {...register('content')}
                         ></textarea>
                         {errors.content && <div className="invalid-feedback small mt-1">{errors.content.message}</div>}
@@ -192,7 +192,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ onPostCreated }) => {
                             </>
                         ) : (
                             <>
-                                <span>Publish Moment</span>
+                                <span>Publish Post</span>
                                 <span style={{ fontSize: '1.2rem' }}>✨</span>
                             </>
                         )}

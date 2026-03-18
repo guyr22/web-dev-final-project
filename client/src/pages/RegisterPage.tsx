@@ -84,7 +84,7 @@ export default function RegisterPage() {
                 </div>
 
                 <h1 className="fs-3 fw-bold text-center mb-1 text-white">Create account</h1>
-                <p className="text-muted text-center mb-4 small">Join and start sharing your moments</p>
+                <p className="text-muted text-center mb-4 small">Join and start sharing your Posts</p>
 
                 {serverError && (
                     <div className="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger alert-dismissible d-flex align-items-center gap-2 mb-4 rounded-3" role="alert">
