@@ -19,18 +19,18 @@ export interface IOwner {
 }
 
 export interface IPost {
-    _id?: string;
+    _id: string;
     title: string;
     content: string;
     owner: IOwner;
     imgUrl?: string;
-    likes?: string[];
-    tags?: string[];
-    comments?: {
+    likes: string[];
+    tags: string[];
+    comments: {
         userId: string | IOwner;
         content: string;
-        createdAt?: string | Date;
+        createdAt: string | Date;
     }[];
-    createdAt?: Date;
+    createdAt: Date;
     updatedAt?: Date;
 }

@@ -18,6 +18,7 @@ const registerSchema = z
         email: z.string().email('Please enter a valid email address'),
         password: z.string().min(6, 'Password must be at least 6 characters'),
         confirmPassword: z.string(),
+        bio: z.string().max(160, 'Bio cannot exceed 160 characters').optional(),
         image: z.custom<FileList>().optional(),
     })
     .refine((d) => d.password === d.confirmPassword, {
@@ -46,6 +47,10 @@ export default function RegisterPage() {
             formData.append('email', values.email);
             formData.append('password', values.password);
             
+            if (values.bio) {
+                formData.append('bio', values.bio);
+            }
+
             if (values.image && values.image.length > 0) {
                 formData.append('image', values.image[0]);
             }
@@ -84,7 +89,7 @@ export default function RegisterPage() {
                 </div>
 
                 <h1 className="fs-3 fw-bold text-center mb-1 text-white">Create account</h1>
-                <p className="text-muted text-center mb-4 small">Join and start sharing your moments</p>
+                <p className="text-muted text-center mb-4 small">Join and start sharing your Posts</p>
 
                 {serverError && (
                     <div className="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger alert-dismissible d-flex align-items-center gap-2 mb-4 rounded-3" role="alert">
@@ -158,6 +163,24 @@ export default function RegisterPage() {
                                 </div>
                             </div>
                         )}
+                    </div>
+                    
+                    {/* Bio */}
+                    <div className="mb-3">
+                        <label className="form-label small" htmlFor="reg-bio">Bio (Optional)</label>
+                        <textarea
+                            id="reg-bio"
+                            placeholder="Tell us about yourself..."
+                            className={`form-control${errors.bio ? ' is-invalid' : ''}`}
+                            rows={3}
+                            {...register('bio')}
+                        />
+                        {errors.bio && (
+                            <div className="invalid-feedback">{errors.bio.message}</div>
+                        )}
+                        <div className="form-text small opacity-50" style={{ fontSize: '0.7rem' }}>
+                            Brief description for your profile. max 160 characters.
+                        </div>
                     </div>
 
                     {/* Profile Image (Optional) */}

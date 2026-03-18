@@ -90,7 +90,7 @@ const CommentsPage = () => {
                 onClick={() => navigate('/feed')}
             >
                 <span style={{ fontSize: '1.2rem' }}>&larr;</span>
-                <span>Back to Moments</span>
+                <span>Back to Feed</span>
             </Button>
 
             <article className="glass-card rounded-4 border-0 overflow-hidden mb-5">
