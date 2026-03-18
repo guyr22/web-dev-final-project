@@ -14,13 +14,6 @@ const getInitials = (username: string): string => {
         .toUpperCase();
 };
 
-const getImageUrl = (url?: string) => {
-    if (!url) return undefined;
-    if (/^(https?:\/\/|data:)/.test(url)) return url;
-    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-    return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
-};
-
 const CommentsPage = () => {
     const { postId } = useParams<{ postId: string }>();
     const navigate = useNavigate();
@@ -97,7 +90,7 @@ const CommentsPage = () => {
                 {post.imgUrl && (
                     <div className="position-relative overflow-hidden" style={{ maxHeight: '300px' }}>
                         <img
-                            src={getImageUrl(post.imgUrl)}
+                            src={post.imgUrl}
                             alt={post.title}
                             className="w-100 object-fit-cover"
                         />
@@ -112,7 +105,7 @@ const CommentsPage = () => {
                         {typeof post.owner === 'object' && post.owner !== null && (
                             post.owner.imgUrl ? (
                                 <img
-                                    src={getImageUrl(post.owner.imgUrl)}
+                                    src={post.owner.imgUrl}
                                     alt={post.owner.username}
                                     className="rounded-circle me-3 object-fit-cover border border-2 border-white border-opacity-10"
                                     style={{ width: '32px', height: '32px' }}
