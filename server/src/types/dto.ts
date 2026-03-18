@@ -4,6 +4,7 @@ export interface IUser {
     email: string;
     password?: string;
     imgUrl?: string;
+    bio?: string;
     refreshTokens?: string[];
 }
 
@@ -40,5 +41,6 @@ export interface IAuthResponse {
         username: string;
         email: string;
         imgUrl?: string;
+        bio?: string;
     };
 }

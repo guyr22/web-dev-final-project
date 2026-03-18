@@ -13,11 +13,11 @@ export class AuthController {
     /**
      * Register a new user
      * POST /auth/register
-     * Body: { username, email, password }
+     * Body: { username, email, password, bio }
      */
     async register(req: Request, res: Response) {
         try {
-            const { username, email, password } = req.body;
+            const { username, email, password, bio } = req.body;
 
             // Validate input
             if (!username || !email || !password) {
@@ -41,7 +41,8 @@ export class AuthController {
                 username,
                 email,
                 password,
-                imgUrl
+                imgUrl,
+                bio
             });
 
             // Generate tokens
@@ -70,7 +71,8 @@ export class AuthController {
                     _id: user._id.toString(),
                     username: user.username,
                     email: user.email,
-                    imgUrl: user.imgUrl
+                    imgUrl: user.imgUrl,
+                    bio: user.bio
                 }
             };
 
@@ -132,7 +134,8 @@ export class AuthController {
                     _id: user._id.toString(),
                     username: user.username,
                     email: user.email,
-                    imgUrl: user.imgUrl
+                    imgUrl: user.imgUrl,
+                    bio: user.bio
                 }
             };
 
@@ -256,7 +259,8 @@ export class AuthController {
                     username: googleUser.name || googleUser.email.split('@')[0],
                     email: googleUser.email,
                     password: randomPassword,
-                    imgUrl: googleUser.picture
+                    imgUrl: googleUser.picture,
+                    bio: ''
                 });
             }
 
@@ -286,7 +290,8 @@ export class AuthController {
                     _id: user._id.toString(),
                     username: user.username,
                     email: user.email,
-                    imgUrl: user.imgUrl
+                    imgUrl: user.imgUrl,
+                    bio: user.bio
                 }
             };
 
