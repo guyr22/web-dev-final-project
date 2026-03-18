@@ -42,8 +42,11 @@ api.interceptors.response.use(
     async (error: AxiosError) => {
         const originalRequest = error.config as RetryableRequestConfig;
 
+        // Avoid redirect loop or refresh logic for login/register
+        const isAuthRequest = originalRequest?.url?.includes('/auth/login') || originalRequest?.url?.includes('/auth/register');
+
         // Only handle 401 errors that haven't already been retried
-        if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
+        if (error.response?.status === 401 && originalRequest && !originalRequest._retry && !isAuthRequest) {
             originalRequest._retry = true; // guard against infinite loops
 
             const refreshToken = getRefreshToken();
