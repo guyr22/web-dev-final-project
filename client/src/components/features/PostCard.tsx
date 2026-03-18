@@ -204,7 +204,6 @@ const PostCard = ({ post, onPostDeleted, onPostUpdated }: PostCardProps) => {
                             <p className="text-white fw-bold mb-0" style={{ fontSize: '0.95rem' }}>
                                 {typeof post.owner === 'object' && post.owner !== null ? post.owner.username : post.owner}
                             </p>
-                            <p className="text-muted small mb-0">Member since 2024</p>
                         </div>
                     </div>
 
