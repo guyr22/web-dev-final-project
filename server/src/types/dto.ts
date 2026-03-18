@@ -2,10 +2,10 @@ export interface IUser {
     _id?: string;
     username: string;
     email: string;
-    password?: string;
+    password: string;
     imgUrl?: string;
     bio?: string;
-    refreshTokens?: string[];
+    refreshTokens: string[];
 }
 
 export interface IComment {
@@ -26,11 +26,11 @@ export interface IPost {
     content: string;
     owner: IOwner;
     imgUrl?: string;
-    likes?: string[]; // Array of User IDs
-    tags?: string[];
+    likes: string[]; // Array of User IDs
+    tags: string[];
     embedding?: number[];
-    comments?: IComment[];
-    createdAt?: Date;
+    comments: IComment[];
+    createdAt: Date;
 }
 
 export interface IAuthResponse {
